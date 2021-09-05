@@ -363,13 +363,17 @@
 //            if (x > 0 || y > 0 || (x < board_max_x - 1) || (y < board_max_y - 1)) {
               // this makes sure all cards are on the board,
               // but throws in a blank periodically
-              if (((totalCells - cellsDone) < (cardsToPlace - 1)) || (Math.floor(Math.random() * 10) < 7)) {
-                num = cards[cardsToPlace - 1];
-                cardsToPlace--;
-                console.log("num pulled off array = " + num);
+              if (((totalCells - cellsDone) < (cardsToPlace - 1)) || (Math.floor(Math.random() * 9) < 7)) {
+                if (cardsToPlace > 0) {
+                  num = cards[cardsToPlace - 1];
+                  cardsToPlace--;
+                } else {
+                  num = -1;
+                }
               } else {
                 num = -1;
               }
+              console.log("num to place on board = " + num);
             }
             whichGrid.appendChild(cell).className = "card-grid-item card-grid-item-board-" + x + "-" + y;
             console.log(num + " at (" + x + "," + y + ")");
@@ -450,9 +454,10 @@
           console.log("opHandCardSlot = " + opHandCardSlot);
           if (opHandCardSlot === -1) {
             // TODO determine whether to keep card or not
-            if (Math.floor(Math.random() * 10) < 5) {
+            if (Math.floor(Math.random() * 9) < 5) {
               // just replace random card for now
-              opHandCardSlot = Math.floor(Math.random() * 5) - 1;
+              opHandCardSlot = Math.floor(Math.random() * 4);
+              console.log("new opHandCardSlot = " + opHandCardSlot);
               console.log("DISCARD " + cardName(opHandCard(opHandCardSlot)) + " KEEP " + cardName(currentCard));
               setPile(opHandCard(opHandCardSlot));
               opHandSetCard(opHandCardSlot, currentCard);
