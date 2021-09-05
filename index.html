@@ -22,10 +22,6 @@
         grid-gap: 0px;
         grid-template-rows: repeat(1, 30px);
         grid-template-columns: repeat(10, 70px);
-        /* grid-auto-rows: dense;
-        grid-auto-columns: dense;
-        grid-row-start: 0;
-        grid-column-start: 0; */
       }
 
       .hand_number_box {
@@ -647,15 +643,6 @@
 
         return { rank: rank, value: c_faces[hand_max_cards - 1] };
 
-        // const cards = hand.split(" ")
-        // const faces = cards.map(a => String.fromCharCode([77 - order.indexOf(a[0])])).sort()
-        // const suits = cards.map(a => a[1]).sort()
-        // const counts = faces.reduce(count, {})
-        // const duplicates = Object.values(counts).reduce(count, {})
-        // const flush = suits[0] === suits[4]
-        // const first = faces[0].charCodeAt(0)
-        // const straight = faces.every((f, index) => f.charCodeAt(0) - first === index)
-
         function byCountFirst(a, b) {
           //Counts are in reverse order - bigger is better
           const countDiff = counts[b] - counts[a];
@@ -683,35 +670,6 @@
         }
         return d1.rank < d2.rank ? "WIN" : "LOSE";
       }
-
-      //     function rankHand(cardArray) {
-      //       let c_rank[];
-      //       let c_suit[];
-      //       for (let i = 0; i < hand_max_cards; i++) {
-      //         c_rank[i] = card_ranks[cardArray[i]];
-      //         c_suit[i] = card_suits[cardArray[i]];
-      //       }
-
-      //       c_rank.sort();
-      //       c_suit.sort();
-
-      //       let isPair = false;
-      //       let isTwoPair = false;
-      //       let isThreeOfKind = false;
-      //       let isStraight = false;
-      //       let isFlush = false;
-      //       let isFullHouse = false;
-      //       let isFourOfKind = false;
-      //       let isStraightFlush = false;
-
-      //       if (c_suit[0] === c_suit[hand_max_cards - 1]) {
-      //         isFlush = true;
-      //       }
-
-      //       const lowCard = c_rank[0];
-      //       isStraight = c_rank.every((f, index) => f.c_rank[0] - lowCard === index);
-
-      // alternative: https://stackoverflow.com/a/53631063
 
       // create card grid
 
