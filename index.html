@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<!-- https://stackoverflow.com/a/58163033 -->
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Spatial Poker</title>
+  <style>
+    
+    body {
+      background-color: lightgray;
+    }
+    
+    :root {
+      --grid-cols: 0;
+      --grid-rows: 0;
+    }
+    
+    .hand_numbers {
+      display: grid;
+      grid-gap: 0px;
+      grid-template-rows: repeat(1, 30px);
+      grid-template-columns: repeat(10, 70px);
+      /* grid-auto-rows: dense;
+      grid-auto-columns: dense;
+      grid-row-start: 0;
+      grid-column-start: 0; */
+    }
+    
+    .hand_number_box {
+      padding: 1em;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 18px;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .hand_number_pad {
+      padding: 1em;
+      border: 0px solid #ddd;
+      text-align: center;
+      font-size: 18px;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .hand_number_box_small {
+      padding: 1em;
+      border: 0px solid #ddd;
+      font-size: 18px;
+      margin: auto;
+      padding: 0;
+    }
+    
+    .card-container {
+      display: grid;
+      grid-gap: 0px;
+      grid-template-rows: repeat(var(--grid-rows), 80px);
+      grid-template-columns: repeat(var(--grid-cols), 70px);
+      /* grid-auto-rows: dense;
+      grid-auto-columns: dense;
+      grid-row-start: 0;
+      grid-column-start: 0; */
+    }
+    
+    .card-grid-item {
+      padding: 1em;
+      /* border: 1px solid #ddd; */
+      border: 1px solid green;
+      text-align: center;
+      font-size: 60px;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="text-center text-white">Spatial Poker</h1>
+  Arrow keys to move. Numbers 1 to 5 to pull from tray and arrange hand. Best five card poker hand wins!
+  <main class="map">
+    <h3>Hands</h3>
+    <!--<hr style="display:inline-block;margin:0;" width="1" size="80">-->
+    <div id="hand" class="card-container grid"></div></div>
+    <div id="handnums" class="hand-number grid"></div>
+    <div class="hand_numbers">
+      <div class="hand_number_box">1</div>
+      <div class="hand_number_box">2</div>
+      <div class="hand_number_box">3</div>
+      <div class="hand_number_box">4</div>
+      <div class="hand_number_box">5</div>
+      <div class="hand_number_box_small" style="text-align:center">Tray (t)</div>
+      <div class="hand_number_box_small" id="pile_count" style="text-align:center">Pile = 0</div>
+    </div>
+    <div id="op_hand" class="card-container grid"></div>
+    <h3>Card Space</h3>
+    <div id="board" class="card-container grid"></div>
+    <!-- Sector
+      <div id="sector" class="sector-container grid"></div>
+    -->
+  </main>
+  <script>
+    const uni_back = "🂠";
+    const uni_cards = ["🂡","🂢","🂣","🂤","🂥","🂦","🂧","🂨","🂩","🂪","🂫","🂭","🂮",
+    "🂱","🂲","🂳","🂴","🂵","🂶","🂷","🂸","🂹","🂺","🂻","🂽","🂾",
+    "🃁","🃂","🃃","🃄","🃅","🃆","🃇","🃈","🃉","🃊","🃋","🃍","🃎",
+    "🃑","🃒","🃓","🃔","🃕","🃖","🃗","🃘","🃙","🃚","🃛","🃝","🃞"];
+    
+    const uni_jokers = ["🃏","🂿","🃟"];   // black, red, white
+    const colors = ["black", "red", "black", "red", "black", "green", "black", "black", "black"];
+    const card_suits = ["spades", "hearts", "diamonds", "clubs"];
+    
+    const c_ace_spades = 0;
+    const c_ace_hearts = 13;
+    const c_ace_diamonds = 26;
+    const c_ace_clubs = 39;
+    
+    const hand_max_cards = 5;
+    const board_max_x = 10;
+    const board_max_y = 7;
+    const board_background = "lightgray";
+    const myBackground = "lightgreen";
+    const opBackground = "lightblue";
+    
+    const handGrid = document.getElementById("hand");
+    const opHandGrid = document.getElementById("op_hand");
+    const boardGrid = document.getElementById("board");
+    
+    var cards = [];
+    var board = [];
+    var hand = [];
+    var op_hand = [];
+    var pile = [];
+    var pileCount = 0;
+    var trayItem;
+    var pileItem;
+    var pileCountItem;
+    
+    let tray = -1;
+    
+    let myCard = {x: 0, y: 0};
+    let opCard = {x: board_max_x - 1, y: board_max_y - 1};
+    
+    const keys = { left: 37, up: 38, right: 39, down: 40, k1: 49, k2: 50, k3: 51, k4: 52, k5: 53, kt: 84 };
+    
+    function createText(txt) {
+      let span = document.createElement("span");
+      span.innerHTML = "<span>" + txt + "</span>";
+      return(span);
+    }
+    
+    function cardColor(num) {
+      if (num >= c_ace_hearts && num < c_ace_clubs) {
+        return("darkred");
+      }
+      return("black");
+    }
+    
+    function cardName(num) {
+      let t = "";
+      let n = num % 13;
+      
+      if (n === 0) {
+        t = "ace of ";
+      }
+      else if (n < 10) {
+        t = (n + 1) + " of ";
+      }
+      else {
+        switch (n) {
+          case 10:
+          t = "Jack of ";
+          break;
+          case 11:
+          t = "Queen of ";
+          break;
+          case 12:
+          t = "King of ";
+          break;
+          default:
+          t = "Unknown of ";
+        }
+      }
+      
+      let suit = parseInt(num / 13);
+      t = t + card_suits[suit];
+      console.log("num = " + num + ", n = " + n + ", t = " + t);
+      return(t);
+    }
+    
+    // Randomize array in-place using Durstenfeld shuffle algorithm
+    // https://stackoverflow.com/a/12646864
+    function shuffleDeck() {
+      // initialize the card deck
+      for (let c = 0; c < uni_cards.length; c++) {
+        cards[c] = c;
+      }
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+    }
+    
+    function boardCard(x, y) {
+      if ((x < 0) || (x > board_max_x - 1) || (y < 0) || (y > board_max_y - 1)) {
+        return(-1);
+      } else {
+        return(board[board_max_x * y + x]);
+      }
+    }
+    
+    function handCard(c) {
+      return(hand[c]);
+    }
+    
+    function opHandCard(c) {
+      return(op_hand[c]);
+    }
+    
+    function boardInit() {
+      for (let x = 0; x < board_max_x; x++) {
+        for (let y = 0; y < board_max_y; y++) {
+          board[board_max_x * y + x] = -1;
+        }
+      }
+    }
+    
+    function boardShadeCell(x, y, color) {
+      boardItem = document.querySelector(".card-grid-item-board-"+ x + "-" + y);
+      boardItem.style.background = color;
+    }
+    
+    function boardSetCard(x, y, num) {
+      boardItem = document.querySelector(".card-grid-item-board-"+ x + "-" + y);
+      if (boardCard(x, y) > -1) {
+        if (num > -1) {
+          boardItem.replaceChild(createCard(num), boardItem.childNodes[0]);        
+        } else {
+          boardItem.removeChild(boardItem.childNodes[0]);
+        }
+      }
+      else if (num > -1) {
+        boardItem.appendChild(createCard(num));
+      }
+      board[board_max_x * y + x] = num;
+    }
+  
+    function opHandSetCard(c, num) {
+      console.log("c in opHandSetCard = " + c);
+      opHandItem = document.querySelector(".card-grid-item-op_hand-"+ c + "-0");
+      if (opHandCard(c) > -1) {
+        opHandItem.removeChild(opHandItem.childNodes[0]);
+      }
+      if (num > -1) {
+        opHandItem.appendChild(createCard(num));
+      }
+      op_hand[c] = num;
+    }
+    
+    function opHandOpenCard() {
+      for (let c = 0; c < hand_max_cards; c++) {
+        if (op_hand[c] === -1) {
+          return(c);
+        }
+      }
+      return(-1);
+    }
+    
+    function handSetCard(c, num) {
+      handItem = document.querySelector(".card-grid-item-hand-"+ c + "-0");
+      if (handCard(c) > -1) {
+        handItem.removeChild(handItem.childNodes[0]);
+      }
+      if (num > -1) {
+        handItem.appendChild(createCard(num));
+      }
+      hand[c] = num;
+    }
+    
+    function handOpenCard() {
+      for (let c = 0; c < hand_max_cards; c++) {
+        if (hand[c] === -1) {
+          return(c);
+        }
+      }
+      return(-1);
+    }
+    
+    function setTray(num) {
+      // let trayItem = document.querySelector(".card-grid-item tray");
+      // let trayItem = document.getElementById("tray");
+      if (tray === -1) {
+        if (num > -1) {
+          trayItem.appendChild(createCard(num));
+        }
+      } else {
+        if (num > -1) {
+          setPile(tray);
+          trayItem.replaceChild(createCard(num), trayItem.childNodes[0]);
+        } else {
+          trayItem.removeChild(trayItem.childNodes[0]);
+        }
+      }
+      tray = num;
+    }
+    
+    function moveTrayToHandSlot(handSlot) {
+    }
+    
+    function clearTray() {
+      tray = -1;
+    }
+    
+    function setPile(num) {
+      // let pileItem = document.getElementById("pile");
+      // let pileCountItem = document.getElementById("pile_count");
+      if (pileCount > 0) {
+        pileItem.replaceChild(createCard(num), pileItem.childNodes[0]);
+      } else {
+        pileItem.appendChild(createCard(num));
+      }
+      pileCount++;
+      pile.push(num);
+      pileCountItem.replaceChildren(createText("Pile = " + pileCount));
+    }
+    
+    function clearPile() {
+      pile = [];
+    }
+    
+    function createCard(num) {
+      let span = document.createElement("span");
+      span.innerHTML = "<span style=\"color:" + cardColor(num) + "\";\">" + uni_cards[num] + "</span>";
+      return(span);
+    }
+    
+    // create card grid
+    
+    function makeCardGrid(whichGrid, id, x_cols, y_rows) {
+      whichGrid.style.setProperty("--grid-rows", y_rows);
+      whichGrid.style.setProperty("--grid-cols", x_cols);
+      
+      let cardsToPlace = cards.length;
+      let totalCells = y_rows * x_cols - 2;
+      let cellsDone = 0;
+
+      console.log("cardsToPlace = " + cardsToPlace);
+      
+      let num = -1;
+      for (let y = 0; y < y_rows; y++) {
+        for (let x = 0; x < x_cols; x++) {
+          let cell = document.createElement("div");
+          cellsDone++;
+          switch (id) {
+            case "board":
+            // upper left and lower right are not populated
+            // because that's where player and opponent start
+            // if (((x > 0) || (y > 0)) && ((x < board_max_x - 1) || (y < board_max_y - 1))) {
+            if ((x === 0 && y === 0) || (x === (board_max_x - 1) && y === (board_max_y - 1))) {
+              num = -1;
+            } else {
+//            if (x > 0 || y > 0 || (x < board_max_x - 1) || (y < board_max_y - 1)) {
+              // this makes sure all cards are on the board,
+              // but throws in a blank periodically
+              if (((totalCells - cellsDone) < (cardsToPlace - 1)) || (Math.floor(Math.random() * 10) < 7)) {
+                num = cards[cardsToPlace - 1];
+                cardsToPlace--;
+                console.log("num pulled off array = " + num);
+              } else {
+                num = -1;
+              }
+            }
+            whichGrid.appendChild(cell).className = "card-grid-item card-grid-item-board-" + x + "-" + y;
+            console.log(num + " at (" + x + "," + y + ")");
+            boardSetCard(x, y, num);
+            break;
+            case "hand":
+            whichGrid.appendChild(cell).className = "card-grid-item card-grid-item-hand-" + x + "-" + y;
+            handSetCard(x, num);
+            break;
+            case "op_hand":
+            whichGrid.appendChild(cell).className = "card-grid-item card-grid-item-op_hand-" + x + "-" + y;
+            opHandSetCard(x, num);
+            break;
+          }
+        }
+      }
+    }
+    
+    function opMove() {
+      boardSetCard(opCard.x, opCard.y, -1);
+      boardShadeCell(opCard.x, opCard.y, board_background);
+
+      let cardUp = boardCard(opCard.x, opCard.y - 1);
+      let cardDown = boardCard(opCard.x, opCard.y + 1);
+      let cardLeft = boardCard(opCard.x - 1, opCard.y);
+      let cardRight = boardCard(opCard.x + 1, opCard.y);
+
+      // if no adjacent card then move random direction
+      if ((cardUp+cardDown+cardLeft+cardRight) == -4) {
+        cardUp = 0;
+        cardDown = 0;
+        cardLeft = 0;
+        cardRight = 0;
+      }
+
+      console.log("cardUp = " + cardUp + " cardDown = " + cardDown + " cardLeft = " + cardLeft + " cardRight = " + cardRight);
+
+      // move randomly, but favor moving to card if one is adjacent
+      let opMoved = false;
+      while (opMoved === false) {
+        let opMoveDir = Math.floor(Math.random() * 4);
+        switch (opMoveDir) {
+          case 1:
+            if (opCard.y > 0 && cardUp > -1) {
+              opCard.y--;
+              opMoved = true;
+            }
+            break;
+          case 2:
+            if (opCard.x > 0 && cardLeft > -1) {
+              opCard.x--;
+              opMoved = true;
+            }
+            break;
+          case 3:
+            if (opCard.y < (board_max_y - 1) && cardDown > -1) {
+              opCard.y++;
+              opMoved = true;
+            }
+            break;
+          case 4:
+            if (opCard.x < (board_max_x - 1) && cardRight > -1) {
+              opCard.x++;
+              opMoved = true;
+            }
+            break;
+        }
+      }
+
+      let currentCard = boardCard(opCard.x, opCard.y);
+      console.log("B myCard = (" + opCard.x + "," + opCard.y + ")" + ", card = " + currentCard + " " + cardName(currentCard));
+      if (currentCard > -1) {
+        if (currentCard === handCard(0)) {
+          alert("Compare hands and determine winnner!");
+        }
+        else {
+          let opHandCardSlot = opHandOpenCard();
+          console.log("opHandCardSlot = " + opHandCardSlot);
+          if (opHandCardSlot === -1) {
+            // TODO determine whether to keep card or not
+            if (Math.floor(Math.random() * 10) < 5) {
+              // just replace random card for now
+              opHandCardSlot = Math.floor(Math.random() * 5) - 1;
+              console.log("DISCARD " + cardName(opHandCard(opHandCardSlot)) + " KEEP " + cardName(currentCard));
+              setPile(opHandCard(opHandCardSlot));
+              opHandSetCard(opHandCardSlot, currentCard);
+            }
+            else {
+              setPile(currentCard);
+            }
+          } else {
+            opHandSetCard(opHandCardSlot, currentCard);
+          }
+        }
+      }
+      boardSetCard(opCard.x, opCard.y, opHandCard(0));
+      boardShadeCell(opCard.x, opCard.y, opBackground);
+    }
+    
+    function handleKey(e) {
+      let curX = myCard.x;
+      let curY = myCard.y;
+      moveKey = false;
+      curKey = e.keyCode;
+      switch (curKey) {
+        case keys.kt:
+        if (tray > -1) {
+          setPile(tray);
+          setTray(-1);
+        }
+        prevKey = -1;
+        break;
+        case keys.k1:
+        case keys.k2:
+        case keys.k3:
+        case keys.k4:
+        case keys.k5:
+        let handCardSlot = curKey - keys.k1;
+        if (tray > -1) {
+          let currentHandCard = handCard(handCardSlot);
+          console.log("handCardSlot = " + handCardSlot + ", tray = " + cardName(tray) + ", currentHandCard = " + cardName(currentHandCard));
+          if (currentHandCard > -1) {
+            setPile(currentHandCard);
+          }
+          handSetCard(handCardSlot, tray);
+          setTray(-1);
+        } else if (prevKey != -1) {
+          let prevCardSlot = prevKey - keys.k1;
+          let curCard = handCard(handCardSlot);
+          let prevCard = handCard(prevCardSlot);
+          console.log("swap " + prevCardSlot + " with " + handCardSlot);
+          handSetCard(handCardSlot, prevCard);
+          handSetCard(prevCardSlot, curCard);
+          prevKey = -1;
+        } else {
+          prevKey = curKey;
+        }
+        break;
+        case keys.left:
+        if (myCard.x > 0) {
+          myCard.x--;
+        }
+        moveKey = true;
+        prevKey = -1;
+        break;
+        case keys.up:
+        if (myCard.y > 0) {
+          myCard.y--;
+        }
+        moveKey = true;
+        prevKey = -1;
+        break;
+        case keys.right:
+        if (myCard.x < (board_max_x - 1)) {
+          myCard.x++;
+        }
+        moveKey = true;
+        prevKey = -1;
+        break;
+        case keys.down:
+        if (myCard.y < (board_max_y - 1)) {
+          myCard.y++;
+        }
+        moveKey = true;
+        prevKey = -1;
+        break;
+      }
+      let holdStill = true;
+      if (moveKey) {
+        if (!holdStill) {
+          boardSetCard(curX, curY, -1);
+          boardShadeCell(curX, curY, board_background);
+          let currentCard = boardCard(myCard.x, myCard.y);
+          console.log("B myCard = (" + myCard.x + "," + myCard.y + ")" + ", card = " + currentCard + " " + cardName(currentCard));
+          if (currentCard > -1) {
+            if (currentCard === opHandCard(0)) {
+              alert("Compare hands and determine winnner!");
+            }
+            else {
+              let handCardSlot = handOpenCard();
+              console.log("handCardSlot = " + handCardSlot);
+              if (handCardSlot === -1) {
+                setTray(currentCard);
+              } else {
+                handSetCard(handCardSlot, currentCard);
+              }
+            }
+          }
+        }
+        opMove();
+      }
+      boardSetCard(myCard.x, myCard.y, handCard(0));
+      boardShadeCell(myCard.x, myCard.y, myBackground);
+    }
+       
+    makeCardGrid(handGrid, "hand", hand_max_cards + 2, 1);
+    makeCardGrid(opHandGrid, "op_hand", hand_max_cards, 1);
+    shuffleDeck();
+    handSetCard(0, cards.pop());
+    opHandSetCard(0, cards.pop());
+    boardInit();
+    makeCardGrid(boardGrid, "board", board_max_x, board_max_y);
+    boardSetCard(myCard.x, myCard.y, handCard(0));
+    boardShadeCell(myCard.x, myCard.y, myBackground);
+    boardSetCard(opCard.x, opCard.y, opHandCard(0));
+    boardShadeCell(opCard.x, opCard.y, opBackground);
+    
+    console.log("opHandCard(0) = " + opHandCard(0) + ", boardCard(" + 
+    opCard.x + "," + opCard.y + ") = " + boardCard(opCard.x, opCard.y));
+    
+    trayItem = document.querySelector(".card-grid-item-hand-5-0");
+    pileItem = document.querySelector(".card-grid-item-hand-6-0");
+    pileCountItem = document.getElementById("pile_count");
+    
+    // let firstGridItem = document.querySelector(".card-grid-item-board-" + 0 + "-" + 0);
+    // firstGridItem.appendChild(handCard(0));
+    
+    console.log("myCard = (" + myCard.x + "," + myCard.y + ")" + ", card = " +
+    boardCard(myCard.x, myCard.y) + " " + cardName(boardCard(myCard.x, myCard.y)));
+    
+    console.log("opCard = (" + opCard.x + "," + opCard.y + ")" + ", card = " +
+    boardCard(opCard.x, opCard.y) + " " + cardName(boardCard(opCard.x, opCard.y)));
+        
+    window.addEventListener("keydown", handleKey);
+  </script>
+</body>
+</html>
