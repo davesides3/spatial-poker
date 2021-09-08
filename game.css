@@ -1,0 +1,57 @@
+body {
+  background-color: lightgray;
+}
+
+:root {
+  --grid-cols: 0;
+  --grid-rows: 0;
+}
+
+.hand_numbers {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-rows: repeat(1, 30px);
+  grid-template-columns: repeat(10, 70px);
+}
+
+.hand_number_box {
+  padding: 1em;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+}
+
+.hand_number_pad {
+  padding: 1em;
+  border: 0px solid #ddd;
+  text-align: center;
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+}
+
+.hand_number_box_small {
+  padding: 1em;
+  border: 0px solid #ddd;
+  font-size: 18px;
+  margin: auto;
+  padding: 0;
+}
+
+.card-container {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-rows: repeat(var(--grid-rows), 80px);
+  grid-template-columns: repeat(var(--grid-cols), 70px);
+}
+
+.card-grid-item {
+  padding: 1em;
+  border: 1px solid green;
+  text-align: center;
+  font-size: 60px;
+  margin: 0;
+  padding: 0;
+}
