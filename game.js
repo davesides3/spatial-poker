@@ -1,182 +1,62 @@
+// ZzFX - Zuper Zmall Zound Zynth - Micro Edition
+// MIT License - Copyright 2019 Frank Force
+// https://github.com/KilledByAPixel/ZzFX
+
+// This is a tiny build of zzfx with only a zzfx function to play sounds.
+// You can use zzfxV to set volume.
+// Feel free to minify it further for your own needs!
+
+'use strict';let zzfx,zzfxV,zzfxX
+
+// ZzFXMicro - Zuper Zmall Zound Zynth - v1.1.8 ~ 884 bytes minified
+zzfxV=1    // volume
+zzfx=       // play sound
+(p=1,k=.05,b=220,e=0,r=0,t=.1,q=0,D=1,u=0,y=0,v=0,z=0,l=0,E=0,A=0,F=0,c=0,w=1,m=0,B=0)=>{let
+M=Math,R=44100,d=2*M.PI,G=u*=500*d/R/R,C=b*=(1-k+2*k*M.random(k=[]))*d/R,g=0,H=0,a=0,n=1,I=0
+,J=0,f=0,x,h;e=R*e+9;m*=R;r*=R;t*=R;c*=R;y*=500*d/R**3;A*=d/R;v*=d/R;z*=R;l=R*l|0;for(h=e+m+
+r+t+c|0;a<h;k[a++]=f)++J%(100*F|0)||(f=q?1<q?2<q?3<q?M.sin((g%d)**3):M.max(M.min(M.tan(g),1)
+,-1):1-(2*g/d%2+2)%2:1-4*M.abs(M.round(g/d)-g/d):M.sin(g),f=(l?1-B+B*M.sin(d*a/l):1)*(0<f?1:
+-1)*M.abs(f)**D*p*zzfxV*(a<e?a/e:a<e+m?1-(a-e)/m*(1-w):a<e+m+r?w:a<h-c?(h-a-c)/t*w:0),f=c?f/
+2+(c>a?0:(a<h-c?1:(h-a)/c)*k[a-c|0]/2):f),x=(b+=u+=y)*M.cos(A*H++),g+=x-x*E*(1-1E9*(M.sin(a)
++1)%2),n&&++n>z&&(b+=v,C+=v,n=0),!l||++I%l||(b=C,u=G,n=n||1);p=zzfxX.createBuffer(1,h,R);p.
+getChannelData(0).set(k);b=zzfxX.createBufferSource();b.buffer=p;b.connect(zzfxX.destination
+);b.start();return b};zzfxX=new (window.AudioContext/*||webkitAudioContext*/) // audio context
+
 const uni_back = "🂠";
 const uni_cards = [
-  "🂡",
-  "🂢",
-  "🂣",
-  "🂤",
-  "🂥",
-  "🂦",
-  "🂧",
-  "🂨",
-  "🂩",
-  "🂪",
-  "🂫",
-  "🂭",
-  "🂮",
-  "🂱",
-  "🂲",
-  "🂳",
-  "🂴",
-  "🂵",
-  "🂶",
-  "🂷",
-  "🂸",
-  "🂹",
-  "🂺",
-  "🂻",
-  "🂽",
-  "🂾",
-  "🃁",
-  "🃂",
-  "🃃",
-  "🃄",
-  "🃅",
-  "🃆",
-  "🃇",
-  "🃈",
-  "🃉",
-  "🃊",
-  "🃋",
-  "🃍",
-  "🃎",
-  "🃑",
-  "🃒",
-  "🃓",
-  "🃔",
-  "🃕",
-  "🃖",
-  "🃗",
-  "🃘",
-  "🃙",
-  "🃚",
-  "🃛",
-  "🃝",
-  "🃞"
+  "🂡","🂢","🂣","🂤","🂥","🂦","🂧","🂨","🂩","🂪","🂫","🂭","🂮",
+  "🂱","🂲","🂳","🂴","🂵","🂶","🂷","🂸","🂹","🂺","🂻","🂽","🂾",
+  "🃁","🃂","🃃","🃄","🃅","🃆","🃇","🃈","🃉","🃊","🃋","🃍","🃎",
+  "🃑","🃒","🃓","🃔","🃕","🃖","🃗","🃘","🃙","🃚","🃛","🃝","🃞"
 ];
 
 const uni_jokers = ["🃏", "🂿", "🃟"]; // black, red, white
 
 const card_faces = [
-  14,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
-  12,
-  13,
-  14,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
-  12,
-  13,
-  14,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
-  12,
-  13,
-  14,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
-  12,
-  13
+  14,2,3,4,5,6,7,8,9,10,11,12,13,
+  14,2,3,4,5,6,7,8,9,10,11,12,13,
+  14,2,3,4,5,6,7,8,9,10,11,12,13,
+  14,2,3,4,5,6,7,8,9,10,11,12,13
 ];
 
 const card_suits = [
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3
+  0,0,0,0,0,0,0,0,0,0,0,0,0,
+  1,1,1,1,1,1,1,1,1,1,1,1,1,
+  2,2,2,2,2,2,2,2,2,2,2,2,2,
+  3,3,3,3,3,3,3,3,3,3,3,3,3
 ];
 
-const colors = [
-  "black",
-  "red",
-  "black",
-  "red",
-  "black",
-  "green",
-  "black",
-  "black",
-  "black"
-];
+// const colors = [
+//   "black",
+//   "red",
+//   "black",
+//   "red",
+//   "black",
+//   "green",
+//   "black",
+//   "black",
+//   "black"
+// ];
 const card_suit_name = ["spades", "hearts", "diamonds", "clubs"];
 
 const c_ace_spades = 0;
@@ -185,17 +65,19 @@ const c_ace_diamonds = 26;
 const c_ace_clubs = 39;
 
 const hand_max_cards = 5;
-const board_max_x = 10;
-const board_max_y = 7;
-const board_background = "lightgray";
-const myBackground = "lightgreen";
-const opBackground = "lightblue";
+const board_max_x = 12;
+const board_max_y = 6;
+const boardBackground = "lightgreen";
+const myBackground = "lightcyan";
+const opBackground = "goldenrod";
+const trayBackground = "lightgrey";
+const pileBackground = "lightgray";
 
 const handGrid = document.getElementById("hand");
 const opHandGrid = document.getElementById("op_hand");
 const boardGrid = document.getElementById("board");
 
-var nightMode = true;
+var cardMode = "Night (m)";
 
 var cards = [];
 var board = [];
@@ -211,6 +93,8 @@ var opHandRankItem;
 var boardItem;
 var handItem;
 var opHandItem;
+var cardModeItem;
+var prevKey = -1;
 
 let tray = -1;
 
@@ -228,12 +112,43 @@ const keys = {
   k4: 52,
   k5: 53,
   kt: 84,
-  kn: 78,
+  km: 77,
 };
+
+function playCardSound() {
+  zzfx(...[,,,,,.01,,2,,,,,,2]);
+  // for (let i = 0; i < 5; i++) {
+  //   zzfx(...[,,,,,.01,,2,,,,,,2]);
+  // }
+}
 
 function createText(txt) {
   let span = document.createElement("span");
   span.innerHTML = "<span>" + txt + "</span>";
+  return span;
+}
+
+function createCard(num) {
+  let span = document.createElement("span");
+  let opFace = opHandCard(0);
+  let plotCard = uni_back;
+  let cardInMyHand = hand.includes(num);
+  let trayCard = tray;
+  let pileCard = pile[pile.length - 1];
+  let plotColor = "black";
+  if (cardInMyHand || num === opFace || num === pileCard || num === trayCard || cardMode === "Day (m)") {
+    plotCard = uni_cards[num];
+  }
+  if (cardMode === "Twilight (m)" || cardMode === "Day (m)") {
+    plotColor = cardColor(num);
+  }
+  
+  span.innerHTML =
+    '<span style="color:' +
+    plotColor +
+    '";">' +
+    plotCard +
+    "</span>";
   return span;
 }
 
@@ -311,9 +226,30 @@ function boardInit() {
   }
 }
 
-function boardShadeCell(x, y, color) {
-  boardItem = document.querySelector(".card-grid-item-board-" + x + "-" + y);
-  boardItem.style.background = color;
+function handShadeCell(c, color) {
+  let handItem = document.querySelector(".card-grid-item-hand-" + c + "-0");
+  handItem.style.background = color;
+  
+}
+
+function boardShadeCell(id, x, y, color) {
+  switch (id) {
+    case "board":
+      boardItem = document.querySelector(".card-grid-item-board-" + x + "-" + y);
+      boardItem.style.background = color;
+      break;
+    case "hand":
+      let handItem = document.querySelector(".card-grid-item-hand-" + x + "-0");
+      handItem.style.background = color;
+      break;
+    case "op_hand":
+      let opHandItem = document.querySelector(".card-grid-item-op_hand-" + x + "-0");
+      opHandItem.style.background = color;
+      break;
+    default:
+      console.log("bad id in boardShadeCell");
+      break;
+  }
 }
 
 function boardSetCard(x, y, num) {
@@ -436,24 +372,16 @@ function setOpHandRank() {
   }
 }
 
-function createCard(num) {
-  let span = document.createElement("span");
-  let opFace = opHandCard(0);
-  let plotCard = uni_back;
-  let cardInMyHand = hand.includes(num);
-  let trayCard = tray;
-  let pileCard = pile[pile.length - 1];
-  if (cardInMyHand || num === opFace || num === pileCard || num === trayCard || !nightMode) {
-    plotCard = uni_cards[num];
+function setCardMode(cardModeIn) {
+  cardMode = cardModeIn;
+  if (cardModeItem.childNodes[0]) {
+    cardModeItem.replaceChild(createText(cardMode), cardModeItem.childNodes[0]);
+  } else {
+    cardModeItem.appendChild(createText(cardMode));
   }
-  
-  span.innerHTML =
-    '<span style="color:' +
-    cardColor(num) +
-    '";">' +
-    plotCard +
-    "</span>";
-  return span;
+  replotCardGrid(handGrid, "hand", hand_max_cards + 2, 1);
+  replotCardGrid(opHandGrid, "op_hand", hand_max_cards, 1);
+  replotCardGrid(boardGrid, "board", board_max_x, board_max_y);
 }
 
 function rankName(rankNum, highCard) {
@@ -478,7 +406,7 @@ function rankName(rankNum, highCard) {
     case 1:
       return "High Card (" + highCard + ")";
     case 0:
-      return "Too few cards.";
+      return "No Rank";
     default:
       return "unexpected " + rankNum;
   }
@@ -556,23 +484,8 @@ function rankHand(cardArray, id) {
   }
 }
 
-// function compareHands(h1, h2) {
-//   let d1 = rankHand(hand, "h1");
-//   let d2 = rankHand(op_hand, "h2");
-//   if (d1.rank === d2.rank) {
-//     if (d1.value > d2.value) {
-//       return "win";
-//     } else if (d1.value > d2.value) {
-//       return "lose";
-//     } else {
-//       return "draw";
-//     }
-//   }
-//   return d1.rank > d2.rank ? "win" : "lose";
-// }
 
 function resultString() {
-//  let result = compareHands(hand, op_hand);
   let myFinal = rankHand(hand, "my");
   let opFinal = rankHand(op_hand, "op");
   console.log("myFinal rank " + myFinal.rank + "(" + myFinal.value + ") and " +
@@ -632,7 +545,7 @@ function makeCardGrid(whichGrid, id, x_cols, y_rows) {
             // but throws in a blank periodically
             if (
               totalCells - cellsDone < cardsToPlace - 1 ||
-              Math.floor(Math.random() * 9) < 7
+              Math.floor(Math.random() * 9) < 6
             ) {
               if (cardsToPlace > 0) {
                 num = cards[cardsToPlace - 1];
@@ -649,18 +562,21 @@ function makeCardGrid(whichGrid, id, x_cols, y_rows) {
             "card-grid-item card-grid-item-board-" + x + "-" + y;
           console.log(num + " at (" + x + "," + y + ")");
           boardSetCard(x, y, num);
+          boardShadeCell(id, x, y, boardBackground);
           break;
         case "hand":
           whichGrid.appendChild(cell).className =
             "card-grid-item card-grid-item-hand-" + x + "-" + y;
           console.log("hand grid num = " + num);
           handSetCard(x, num);
+          boardShadeCell(id, x, 0, myBackground);
           break;
         case "op_hand":
           whichGrid.appendChild(cell).className =
             "card-grid-item card-grid-item-op_hand-" + x + "-" + y;
           console.log("ophand grid num = " + num);
           opHandSetCard(x, num);
+          boardShadeCell(id, x, 0, opBackground);
           break;
       }
     }
@@ -714,8 +630,10 @@ function bestHand(inHand, cardToTry, direction) {
 
 function opMove() {
   boardSetCard(opCard.x, opCard.y, -1);
-  boardShadeCell(opCard.x, opCard.y, board_background);
+  boardShadeCell("board", opCard.x, opCard.y, boardBackground);
 
+  let currentCard = boardCard(opCard.x, opCard.y);
+  
   let replaceCardSlot = opHandOpenCard();
   
   let cardLeft = boardCard(opCard.x - 1, opCard.y);
@@ -730,6 +648,7 @@ function opMove() {
   let handResults = [handLeft, handRight, handUp, handDown];
   let bestMove = handResults.sort(function(a, b) {return b.rank - a.rank;});
   
+  console.log("replaceCardSlot = " + replaceCardSlot);
   console.log("bestMove = " + JSON.stringify(bestMove));
   
   // console.log("cardUp = " + cardUp + " cardDown = " + cardDown + " cardLeft = " + cardLeft + " cardRight = " + cardRight);
@@ -796,32 +715,33 @@ function opMove() {
     }
   }
 
-  let currentCard = boardCard(opCard.x, opCard.y);
+  currentCard = boardCard(opCard.x, opCard.y);
   console.log("B myCard = (" + opCard.x + "," + opCard.y + ")" + ", card = " + currentCard + " " + cardName(currentCard));
 
   // if trying to pick up opponent (my) card then check for victory
   if (currentCard === handCard(0)) {
+    setCardMode("Day (m)");
     alert(resultString());
     location.reload();
   }
 
   console.log("op card resolve: currentCard = " + currentCard + ", replaceCardSlot = " + replaceCardSlot);
 
-  if (currentCard > -1 && replaceCardSlot > -1) {
-    if (replaceCardSlot === -1) {
-      if (Math.floor(Math.random() * 9) < 5) {
-        console.log("DISCARD " + cardName(opHandCard(replaceCardSlot)) + " KEEP " + cardName(currentCard));
-        setPile(opHandCard(replaceCardSlot));
-        opHandSetCard(replaceCardSlot, currentCard);
-      } else {
-        setPile(currentCard);
-      }
-    } else {
+  if (currentCard > -1) {
+    if (opHandCard(replaceCardSlot) > -1) {
+      // if (Math.floor(Math.random() * 9) < 5) {
+      //   console.log("DISCARD " + cardName(opHandCard(replaceCardSlot)) + " KEEP " + cardName(currentCard));
+      setPile(opHandCard(replaceCardSlot));
       opHandSetCard(replaceCardSlot, currentCard);
+    } else if (replaceCardSlot > -1) {
+      opHandSetCard(replaceCardSlot, currentCard);
+      setPile(currentCard);
+    } else {
+      setPile(currentCard);
     }
   }
   boardSetCard(opCard.x, opCard.y, opHandCard(0));
-  boardShadeCell(opCard.x, opCard.y, opBackground);
+  boardShadeCell("board", opCard.x, opCard.y, opBackground);
   setOpHandRank();
 }
 
@@ -830,7 +750,6 @@ function handleKey(e) {
   let curY = myCard.y;
   let moveKey = false;
   let curKey = e.keyCode;
-  let prevKey;
   switch (curKey) {
     case keys.kt:
       if (tray > -1) {
@@ -839,11 +758,14 @@ function handleKey(e) {
       }
       prevKey = -1;
       break;
-    case keys.kn:
-      nightMode = !nightMode;
-      replotCardGrid(handGrid, "hand", hand_max_cards + 2, 1);
-      replotCardGrid(opHandGrid, "op_hand", hand_max_cards, 1);
-      replotCardGrid(boardGrid, "board", board_max_x, board_max_y);
+    case keys.km:
+      if (cardMode === "Night (m)") {
+        setCardMode("Twilight (m)");
+      } else if (cardMode === "Twilight (m)") {
+        setCardMode("Day (m)");
+      } else if (cardMode === "Day (m)") {
+        setCardMode("Night (m)");
+      }
       break;
     case keys.k1:
     case keys.k2:
@@ -853,14 +775,7 @@ function handleKey(e) {
       let handCardSlot = curKey - keys.k1;
       if (tray > -1) {
         let currentHandCard = handCard(handCardSlot);
-        console.log(
-          "handCardSlot = " +
-            handCardSlot +
-            ", tray = " +
-            cardName(tray) +
-            ", currentHandCard = " +
-            cardName(currentHandCard)
-        );
+        console.log("handCardSlot = " + handCardSlot + ", tray = " + cardName(tray) + ", currentHandCard = " + cardName(currentHandCard));
         if (currentHandCard > -1) {
           setPile(currentHandCard);
         }
@@ -907,56 +822,65 @@ function handleKey(e) {
       prevKey = -1;
       break;
   }
-  let holdStill = false;
+
   if (moveKey) {
-    if (!holdStill) {
-      boardSetCard(curX, curY, -1);
-      boardShadeCell(curX, curY, board_background);
-      let currentCard = boardCard(myCard.x, myCard.y);
-      console.log(
-        "B myCard = (" +
-          myCard.x +
-          "," +
-          myCard.y +
-          ")" +
-          ", card = " +
-          currentCard +
-          " " +
-          cardName(currentCard)
-      );
-      if (currentCard > -1) {
-        if (currentCard === opHandCard(0)) {
-          alert(resultString());
-          location.reload();
+    boardSetCard(curX, curY, -1);
+    boardShadeCell("board", curX, curY, boardBackground);
+    let currentCard = boardCard(myCard.x, myCard.y);
+    if (currentCard > -1) {
+      if (currentCard === opHandCard(0)) {
+        setCardMode("Day (m)");
+        alert(resultString());
+        location.reload();
+      } else {
+        let handCardSlot = handOpenCard();
+        console.log("handCardSlot = " + handCardSlot);
+        if (handCardSlot === -1) {
+          setTray(currentCard);
         } else {
-          let handCardSlot = handOpenCard();
-          console.log("handCardSlot = " + handCardSlot);
-          if (handCardSlot === -1) {
-            setTray(currentCard);
-          } else {
-            handSetCard(handCardSlot, currentCard);
-          }
+          handSetCard(handCardSlot, currentCard);
         }
       }
     }
+    boardSetCard(myCard.x, myCard.y, handCard(0));
+    boardShadeCell("board", myCard.x, myCard.y, myBackground);
+    setHandRank();
     opMove();
+  } else {
+    boardSetCard(myCard.x, myCard.y, handCard(0));
+    setHandRank();
   }
-  boardSetCard(myCard.x, myCard.y, handCard(0));
-  boardShadeCell(myCard.x, myCard.y, myBackground);
-  setHandRank();
+  playCardSound();
 }
+
+pileCountItem = document.getElementById("pile_count");
+handRankItem = document.getElementById("hand_rank");
+opHandRankItem = document.getElementById("op_hand_rank");
+cardModeItem = document.getElementById("card_mode");
 
 makeCardGrid(handGrid, "hand", hand_max_cards + 2, 1);
 makeCardGrid(opHandGrid, "op_hand", hand_max_cards, 1);
+trayItem = document.querySelector(".card-grid-item-hand-5-0");
+pileItem = document.querySelector(".card-grid-item-hand-6-0");
 shuffleDeck();
+setCardMode("Night (m)");
 handSetCard(0, cards.pop());
 opHandSetCard(0, cards.pop());
+
+// for (let i = 0; i < hand_max_cards; i++) {
+//   boardShadeCell("hand", i, 0, myBackground);
+// }
+// for (let i = 0; i < hand_max_cards; i++) {
+//   boardShadeCell("op_hand", i, 0, opBackground);
+// }
+boardShadeCell("hand", hand_max_cards, 0, trayBackground);
+boardShadeCell("hand", hand_max_cards + 1, 0, pileBackground);
 boardInit();
 makeCardGrid(boardGrid, "board", board_max_x, board_max_y);
 boardSetCard(myCard.x, myCard.y, handCard(0));
-boardShadeCell(myCard.x, myCard.y, myBackground);
+boardShadeCell("board", myCard.x, myCard.y, myBackground);
 boardSetCard(opCard.x, opCard.y, opHandCard(0));
-boardShadeCell(opCard.x, opCard.y, opBackground);
+boardShadeCell("board", opCard.x, opCard.y, opBackground);
 
 console.log(
   "opHandCard(0) = " +
@@ -969,11 +893,6 @@ console.log(
     boardCard(opCard.x, opCard.y)
 );
 
-trayItem = document.querySelector(".card-grid-item-hand-5-0");
-pileItem = document.querySelector(".card-grid-item-hand-6-0");
-pileCountItem = document.getElementById("pile_count");
-handRankItem = document.getElementById("hand_rank");
-opHandRankItem = document.getElementById("op_hand_rank");
 
 // let firstGridItem = document.querySelector(".card-grid-item-board-" + 0 + "-" + 0);
 // firstGridItem.appendChild(handCard(0));

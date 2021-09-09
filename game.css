@@ -1,5 +1,5 @@
 body {
-  background-color: lightgray;
+  background-color: white;
 }
 
 :root {
@@ -11,15 +11,15 @@ body {
   display: grid;
   grid-gap: 0px;
   grid-template-rows: repeat(1, 30px);
-  grid-template-columns: repeat(10, 70px);
+  grid-template-columns: repeat(11, 70px);
 }
 
 .hand_number_box {
   padding: 1em;
   border: 1px solid #ddd;
   text-align: center;
-  font-size: 18px;
-  margin: 0;
+  font-size: 14px;
+  margin: 2px;
   padding: 0;
 }
 
@@ -27,21 +27,21 @@ body {
   padding: 1em;
   border: 0px solid #ddd;
   text-align: center;
-  font-size: 18px;
-  margin: 0;
+  font-size: 14px;
+  margin: 2px;  /* auto */
   padding: 0;
 }
 
 .hand_number_box_small {
   padding: 1em;
   border: 0px solid #ddd;
-  font-size: 18px;
-  margin: auto;
+  font-size: 14px;
+  margin: 2px;
   padding: 0;
 }
 
 .card-container {
-  display: grid;
+  display: inline-grid;
   grid-gap: 0px;
   grid-template-rows: repeat(var(--grid-rows), 80px);
   grid-template-columns: repeat(var(--grid-cols), 70px);
