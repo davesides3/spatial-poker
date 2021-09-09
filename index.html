@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <!--
 To Do
+- once 52 cards claimed or discarded, end game with victory check
 - bug: pile count is off? opponent discard?
 - bug: possible to have overlap without victory check
-- once 52 cards claimed or discarded, end game with victory check
-- sounds: card into hand, card into pile, cards onto board, shuffle
+- bug: pair, two pair, 3 of a kind, 4 of a kind, full house comparisons
+- bug: high card comparison on ties
+- sound: adjust sound of moving card
+- sound: sound for win
+- sound: sound for loss
+- sound: sound for draw
 - toggle sound on/off
 - fit screen better (iPad?)
 
 Bugs
 
 - ace on bottom straight
-- pair, two pair, 3 of a kind, 4 of a kind, full house comparisons
-- high card comparison on ties
 
 Would Be Nice
 + night mode
@@ -102,20 +105,20 @@ Mobile
     </style> -->
   </head>
   <body>
-    <h1 class="text-center text-white">Spatial Poker</h1>
+    <!--     <h1 class="text-center text-white">Spatial Poker</h1>
     Arrow keys to move. Numbers 1 to 5 to pull from tray and arrange hand. Best
-    five card poker hand wins!
+    five card poker hand wins! -->
     <main class="map">
-      <h3>Hands</h3>
+      <!--       <h3>Hands</h3> -->
       <!--<hr style="display:inline-block;margin:0;" width="1" size="80">-->
-      <div id="hand" class="card-container grid"></div>
+      <div id="hand" class="card-container grid"></div><div id="op_hand" class="card-container grid"></div>
       <div id="handnums" class="hand-number grid"></div>
       <div class="hand_numbers">
-        <div class="hand_number_box">1</div>
-        <div class="hand_number_box">2</div>
-        <div class="hand_number_box">3</div>
-        <div class="hand_number_box">4</div>
-        <div class="hand_number_box">5</div>
+        <div class="hand_number_box">(1)</div>
+        <div class="hand_number_box">(2)</div>
+        <div class="hand_number_box">(3)</div>
+        <div class="hand_number_box">(4)</div>
+        <div class="hand_number_box">(5)</div>
         <div class="hand_number_box_small" style="text-align:center">
           Tray (t)
         </div>
@@ -128,6 +131,12 @@ Mobile
         </div>
         <div
           class="hand_number_box_small"
+          id="card_mode"
+          style="text-align:center"
+        ></div>
+
+        <div
+          class="hand_number_box_small"
           id="hand_rank"
           style="text-align:center"
         ></div>
@@ -137,8 +146,8 @@ Mobile
           style="text-align:center"
         ></div>
       </div>
-      <div id="op_hand" class="card-container grid"></div>
-      <h3>Card Space</h3>
+      <!--       <div id="op_hand" class="card-container grid"></div> -->
+      <!--       <h3>Card Space</h3> -->
       <div id="board" class="card-container grid"></div>
     </main>
     <script src="game.js"></script>
