@@ -1,5 +1,5 @@
 body {
-  background-color: white;
+  background-color: ivory;
 }
 
 :root {
@@ -35,7 +35,7 @@ body {
 .hand_number_box_small {
   padding: 1em;
   border: 0px solid #ddd;
-  font-size: 14px;
+  font-size: 12px;
   margin: 2px;
   padding: 0;
 }

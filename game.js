@@ -9,7 +9,7 @@
 'use strict';let zzfx,zzfxV,zzfxX
 
 // ZzFXMicro - Zuper Zmall Zound Zynth - v1.1.8 ~ 884 bytes minified
-zzfxV=1    // volume
+zzfxV=2    // volume
 zzfx=       // play sound
 (p=1,k=.05,b=220,e=0,r=0,t=.1,q=0,D=1,u=0,y=0,v=0,z=0,l=0,E=0,A=0,F=0,c=0,w=1,m=0,B=0)=>{let
 M=Math,R=44100,d=2*M.PI,G=u*=500*d/R/R,C=b*=(1-k+2*k*M.random(k=[]))*d/R,g=0,H=0,a=0,n=1,I=0
@@ -20,7 +20,24 @@ r+t+c|0;a<h;k[a++]=f)++J%(100*F|0)||(f=q?1<q?2<q?3<q?M.sin((g%d)**3):M.max(M.min
 2+(c>a?0:(a<h-c?1:(h-a)/c)*k[a-c|0]/2):f),x=(b+=u+=y)*M.cos(A*H++),g+=x-x*E*(1-1E9*(M.sin(a)
 +1)%2),n&&++n>z&&(b+=v,C+=v,n=0),!l||++I%l||(b=C,u=G,n=n||1);p=zzfxX.createBuffer(1,h,R);p.
 getChannelData(0).set(k);b=zzfxX.createBufferSource();b.buffer=p;b.connect(zzfxX.destination
-);b.start();return b};zzfxX=new (window.AudioContext/*||webkitAudioContext*/) // audio context
+);b.start();return b};zzfxX=new (window.AudioContext||webkitAudioContext) // audio context
+
+
+// https://stackoverflow.com/a/22607328
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
+}
+
 
 const uni_back = "🂠";
 const uni_cards = [
@@ -67,17 +84,18 @@ const c_ace_clubs = 39;
 const hand_max_cards = 5;
 const board_max_x = 12;
 const board_max_y = 6;
-const boardBackground = "lightgreen";
-const myBackground = "lightcyan";
+const boardBackground = "lightcyan";
+const myBackground = "lightgreen";
 const opBackground = "goldenrod";
-const trayBackground = "lightgrey";
-const pileBackground = "lightgray";
+const trayBackground = "lightgray";
+const pileBackground = "darkgray";
 
 const handGrid = document.getElementById("hand");
 const opHandGrid = document.getElementById("op_hand");
 const boardGrid = document.getElementById("board");
 
-var cardMode = "Night (m)";
+var playMode = "3";
+var soundMode = "1";
 
 var cards = [];
 var board = [];
@@ -93,7 +111,6 @@ var opHandRankItem;
 var boardItem;
 var handItem;
 var opHandItem;
-var cardModeItem;
 var prevKey = -1;
 
 let tray = -1;
@@ -112,14 +129,14 @@ const keys = {
   k4: 52,
   k5: 53,
   kt: 84,
-  km: 77,
+  esc: 27
 };
 
 function playCardSound() {
-  zzfx(...[,,,,,.01,,2,,,,,,2]);
-  // for (let i = 0; i < 5; i++) {
-  //   zzfx(...[,,,,,.01,,2,,,,,,2]);
-  // }
+  if (soundMode === "1") {
+    console.log("play sound");
+    zzfx(...[,,,,,.01,,2,,,,,,2]);
+  }
 }
 
 function createText(txt) {
@@ -136,10 +153,10 @@ function createCard(num) {
   let trayCard = tray;
   let pileCard = pile[pile.length - 1];
   let plotColor = "black";
-  if (cardInMyHand || num === opFace || num === pileCard || num === trayCard || cardMode === "Day (m)") {
+  if (cardInMyHand || num === opFace || num === pileCard || num === trayCard || playMode === "1") {
     plotCard = uni_cards[num];
   }
-  if (cardMode === "Twilight (m)" || cardMode === "Day (m)") {
+  if (playMode === "2" || playMode === "1") {
     plotColor = cardColor(num);
   }
   
@@ -372,13 +389,8 @@ function setOpHandRank() {
   }
 }
 
-function setCardMode(cardModeIn) {
-  cardMode = cardModeIn;
-  if (cardModeItem.childNodes[0]) {
-    cardModeItem.replaceChild(createText(cardMode), cardModeItem.childNodes[0]);
-  } else {
-    cardModeItem.appendChild(createText(cardMode));
-  }
+function setPlayMode(playModeIn) {
+  playMode = playModeIn;
   replotCardGrid(handGrid, "hand", hand_max_cards + 2, 1);
   replotCardGrid(opHandGrid, "op_hand", hand_max_cards, 1);
   replotCardGrid(boardGrid, "board", board_max_x, board_max_y);
@@ -720,7 +732,7 @@ function opMove() {
 
   // if trying to pick up opponent (my) card then check for victory
   if (currentCard === handCard(0)) {
-    setCardMode("Day (m)");
+    setPlayMode(1);
     alert(resultString());
     location.reload();
   }
@@ -757,15 +769,6 @@ function handleKey(e) {
         setTray(-1);
       }
       prevKey = -1;
-      break;
-    case keys.km:
-      if (cardMode === "Night (m)") {
-        setCardMode("Twilight (m)");
-      } else if (cardMode === "Twilight (m)") {
-        setCardMode("Day (m)");
-      } else if (cardMode === "Day (m)") {
-        setCardMode("Night (m)");
-      }
       break;
     case keys.k1:
     case keys.k2:
@@ -821,6 +824,10 @@ function handleKey(e) {
       moveKey = true;
       prevKey = -1;
       break;
+    case keys.esc:
+      if (confirm("Exit game?") === true) {
+        window.location.href = "index.html";
+      }
   }
 
   if (moveKey) {
@@ -829,7 +836,7 @@ function handleKey(e) {
     let currentCard = boardCard(myCard.x, myCard.y);
     if (currentCard > -1) {
       if (currentCard === opHandCard(0)) {
-        setCardMode("Day (m)");
+        setPlayMode(1);
         alert(resultString());
         location.reload();
       } else {
@@ -853,17 +860,18 @@ function handleKey(e) {
   playCardSound();
 }
 
+playMode = GetURLParameter("play_mode");
+soundMode = GetURLParameter("sound_mode");
+
 pileCountItem = document.getElementById("pile_count");
 handRankItem = document.getElementById("hand_rank");
 opHandRankItem = document.getElementById("op_hand_rank");
-cardModeItem = document.getElementById("card_mode");
 
 makeCardGrid(handGrid, "hand", hand_max_cards + 2, 1);
 makeCardGrid(opHandGrid, "op_hand", hand_max_cards, 1);
 trayItem = document.querySelector(".card-grid-item-hand-5-0");
 pileItem = document.querySelector(".card-grid-item-hand-6-0");
 shuffleDeck();
-setCardMode("Night (m)");
 handSetCard(0, cards.pop());
 opHandSetCard(0, cards.pop());
 
@@ -881,6 +889,8 @@ boardSetCard(myCard.x, myCard.y, handCard(0));
 boardShadeCell("board", myCard.x, myCard.y, myBackground);
 boardSetCard(opCard.x, opCard.y, opHandCard(0));
 boardShadeCell("board", opCard.x, opCard.y, opBackground);
+
+//setPlayMode(playMode);
 
 console.log(
   "opHandCard(0) = " +

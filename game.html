@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--
+To Do
+- once 52 cards claimed or discarded, end game with victory check
+- qa: check pile count
+- qa: check navigation between pages on disk, not just server
+- bug: pair, two pair, 3 of a kind, 4 of a kind, full house comparisons
+- bug: high card comparison on ties
+- sound: adjust sound of moving card
+- sound: sound for win
+- sound: sound for loss
+- sound: sound for draw
+- toggle sound on/off
+- fit screen better (iPad?)
+
+Bugs
+
+
+Would Be Nice
+- ace on bottom straight
++ night mode
+- as soon as op has full house, chase player
+- undo last key
+
+Mobile
+- add touch
+- add drag-and-drop to reorder hand
+- keep hand visible on screen regardless of sizing?
+- choose number of opponents?
+- choose grid size?
+-->
+
+<!-- https://stackoverflow.com/a/58163033 -->
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Spatial Poker</title>
+    <link rel="stylesheet" href="game.css" />
+  </head>
+  <body>
+    <main class="map">
+      <div id="hand" class="card-container grid"></div><div id="op_hand" class="card-container grid"></div>
+      <div id="handnums" class="hand-number grid"></div>
+      <div class="hand_numbers">
+        <div class="hand_number_box">(1)</div>
+        <div class="hand_number_box">(2)</div>
+        <div class="hand_number_box">(3)</div>
+        <div class="hand_number_box">(4)</div>
+        <div class="hand_number_box">(5)</div>
+        <div class="hand_number_box_small" style="text-align:center">
+          Tray (t)
+        </div>
+        <div
+          class="hand_number_box_small"
+          id="pile_count"
+          style="text-align:center"
+        >
+          Pile = 0
+        </div>
+        <div
+          class="hand_number_box_small"
+          id="hand_rank"
+          style="text-align:center"
+        ></div>
+        <div
+          class="hand_number_box_small"
+          id="op_hand_rank"
+          style="text-align:center"
+        ></div>
+      </div>
+      <div id="board" class="card-container grid"></div>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
