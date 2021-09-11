@@ -63,6 +63,19 @@ const card_suits = [
   3,3,3,3,3,3,3,3,3,3,3,3,3
 ];
 
+const ranks = {
+  StraightFlush: 9,
+  FourOfAKind: 8,
+  FullHouse: 7,
+  Flush: 6,
+  Straight: 5,
+  ThreeOfAKind: 4,
+  TwoPair: 3,
+  OnePair: 2,
+  HighCard: 1,
+  NoRank: 0
+};
+      
 const card_suit_name = ["spades", "hearts", "diamonds", "clubs"];
 
 const c_ace_spades = 0;
@@ -118,7 +131,8 @@ const keys = {
   k4: 52,
   k5: 53,
   kt: 84,
-  esc: 27
+  kx: 88,
+  kq: 81
 };
 
 function playCardSound() {
@@ -347,30 +361,48 @@ function setPile(num) {
   pileCountItem.replaceChildren(createText("Pile = " + pileCount));
 }
 
-function clearPile() {
-  pile = [];
+function exitGame() {
+  window.location.href = "index.html";
+}
+
+function gameOver() {
+  // show all cards
+  setPlayMode("1");
+  if (confirm(resultString()) === true) {
+    // start a new game
+    location.reload();
+    
+  } else {
+    exitGame();
+  }
 }
 
 function setHandRank() {
-  let { rank, value } = rankHand(hand, "my");
-  let rName = rankName(rank, value);
+  let { rank, high1, high2 } = rankHand(hand, "my");
+  let textToDisplay = "Player's hand: " + rankName(rank, high1, high2);
   if (handRankItem.childNodes[0]) {
-    handRankItem.replaceChild(createText(rName), handRankItem.childNodes[0]);
+    handRankItem.replaceChild(createText(textToDisplay), handRankItem.childNodes[0]);
   } else {
-    handRankItem.appendChild(createText(rName));
+    handRankItem.appendChild(createText(textToDisplay));
   }
 }
 
 function setOpHandRank() {
-  let { rank, value } = rankHand(op_hand, "op");
-  let rName = rankName(rank, value);
+  let { rank, high1, high2 } = rankHand(op_hand, "op");
+  let textToDisplay;
+  if (playMode === "1") {
+    textToDisplay = "Opponent's hand: " + rankName(rank, high1, high2);  
+  } else {
+    textToDisplay = "Opponent's Hand";
+  }
+  
   if (opHandRankItem.childNodes[0]) {
     opHandRankItem.replaceChild(
-      createText(rName),
+      createText(textToDisplay),
       opHandRankItem.childNodes[0]
     );
   } else {
-    opHandRankItem.appendChild(createText(rName));
+    opHandRankItem.appendChild(createText(textToDisplay));
   }
 }
 
@@ -381,28 +413,28 @@ function setPlayMode(playModeIn) {
   replotCardGrid(boardGrid, "board", board_max_x, board_max_y);
 }
 
-function rankName(rankNum, highCard) {
+function rankName(rankNum, highCard1, highCard2) {
   console.log("rankNum = ", rankNum);
   switch (rankNum) {
-    case 9:
-      return "Straight Flush (" + cardName(highCard) + " high)";
-    case 8:
-      return "Four of a Kind (" + cardName(highCard) + "s)";
-    case 7:
-      return "Full House (" + cardName(highCard) + "s)";
-    case 6:
-      return "Flush (" + cardName(highCard) + "s)";
-    case 5:
-      return "Straight (" + cardName(highCard) + " high)";
-    case 4:
-      return "Three of a Kind (" + cardName(highCard) + "s)";
-    case 3:
-      return "Two Pair (" + cardName(highCard) + "s)";
-    case 2:
-      return "A Pair (" + cardName(highCard) + "s)";
-    case 1:
-      return "High Card (" + cardName(highCard) + ")";
-    case 0:
+    case ranks.StraighFlush:
+      return "Straight Flush (" + cardName(highCard1) + " high)";
+    case ranks.FourOfAKind:
+      return "Four of a Kind (" + cardName(highCard1) + "s)";
+    case ranks.FullHouse:
+      return "Full House (" + cardName(highCard1) + "s)";
+    case ranks.Flush:
+      return "Flush (" + cardName(highCard1) + "s)";
+    case ranks.Straight:
+      return "Straight (" + cardName(highCard1) + " high)";
+    case ranks.ThreeOfAKind:
+      return "Three of a Kind (" + cardName(highCard1) + "s)";
+    case ranks.TwoPair:
+      return "Two Pair (" + cardName(highCard1) + "s, " + cardName(highCard2) + "s)";
+    case ranks.OnePair:
+      return "A Pair (" + cardName(highCard1) + "s)";
+    case ranks.HighCard:
+      return "High Card (" + cardName(highCard1) + ")";
+    case ranks.NoRank:
       return "No Rank";
     default:
       return "unexpected (" + rankNum + ")";
@@ -410,7 +442,7 @@ function rankName(rankNum, highCard) {
 }
 
 // https://dev.to/miketalbot/real-world-javascript-map-reduce-solving-the-poker-hand-problem-3eie
-// adapted to different arrays - uses more modern JavaScript
+// adapted for the game
 function rankHand(cardArray, id) {
   let c_faces = [];
   let c_suits = [];
@@ -426,7 +458,7 @@ function rankHand(cardArray, id) {
 
   // no rank until 5 cards
   if (c_faces.includes(-1)) {
-    return { rank: 0, value: 0 };
+    return { rank: ranks.NoRank, high1: 0, high2: 0 };
   }
   
   console.log(id + " cardArray = " + cardArray);
@@ -438,10 +470,6 @@ function rankHand(cardArray, id) {
   c_suits = c_suits.sort(function(a, b) {
     return b - a;
   });
-
-  if (c_faces.includes(-1)) {
-    return { rank: 0, value: 0 };
-  }
 
   console.log(id + " c_faces = " + c_faces);
   console.log(id + " c_suits = " + c_suits);
@@ -461,70 +489,72 @@ function rankHand(cardArray, id) {
   console.log(id + " straight = " + straight);
 
   let rank =
-    (flush && straight && 9) ||
-    (duplicates[4] && 8) ||
-    (duplicates[3] && duplicates[2] && 7) ||
-    (flush && 6) ||
-    (straight && 5) ||
-    (duplicates[3] && 4) ||
-    (duplicates[2] > 1 && 3) ||
-    (duplicates[2] && 2) ||
-    1;
-
-  // highCard determination won't necessarily determine
-  // the highest hand because it only consider the strongest match
-  // (e.g. 3 of a kinds in a full house)
-  let highCard;
+    (flush && straight && ranks.StraightFlush) ||
+    (duplicates[4] && ranks.FourOfAKind) ||
+    (duplicates[3] && duplicates[2] && ranks.FullHouse) ||
+    (flush && ranks.Flush) ||
+    (straight && ranks.Straight) ||
+    (duplicates[3] && ranks.ThreeOfAKind) ||
+    (duplicates[2] > 1 && ranks.TwoPair) ||
+    (duplicates[2] && ranks.OnePair) ||
+    ranks.HighCard;
+  
+  let high1;
+  let high2 = -1;
   switch (rank) {
-    case 9:
-      highCard = c_faces[0];
+    case ranks.StraightFlush:
+      high1 = c_faces[0];
       break;
-    case 8:
+    case ranks.FourOfAKind:
       // four of a kind, the first one might the the odd one,
       // but the second card has to be in the 4 of a kind
-      highCard = c_faces[1];
+      high1 = c_faces[1];
       break;
-    case 7:
+    case ranks.FullHouse:
       // similarly, a full house could have the first 2 cards
       // be high, but the 3rd card will be in the 3-of-a-kind
-      highCard = c_faces[2];
+      high1 = c_faces[2];
+      // high2 is not really needed, but nice to show
+      high2 = c_faces[4];
       break;
-    case 6:
-      highCard = c_faces[0];
+    case ranks.Flush:
+      high1 = c_faces[0];
       break;
-    case 5:
-      highCard = c_faces[0];
+    case ranks.Straight:
+      high1 = c_faces[0];
       break;
-    case 4:
+    case ranks.ThreeOfAKind:
       // three of a kind will have the middle card as part of the 3
-      highCard = c_faces[2];
+      high1 = c_faces[2];
       break;
-    case 3:
+    case ranks.TwoPair:
       // two pair might have a high card unmatched, but the second
       // card will be the high pair
-      highCard = c_faces[1];
+      high1 = c_faces[1];
+      // likewise, the 4th card should be in the second pair
+      high2 = c_faces[3];
       break;
-    case 2:
+    case ranks.OnePair:
       let prevCard = -1;
-      highCard = -1;
+      high1 = -1;
       for (let i = 0; i < hand_max_cards; i++) {
         if (c_faces[i] === prevCard) {
-          highCard = c_faces[i];
+          high1 = c_faces[i];
           break;
         }
         prevCard = c_faces[i];
       }
-      console.log("pair ranking high card = " + highCard);
+      console.log("pair ranking high card = " + high1);
       break;
-    case 1:
-      highCard = c_faces[0];
+    case ranks.HighCard:
+      high1 = c_faces[0];
       break;
-    case 0:
-      highCard = c_faces[0];
+    case ranks.NoRank:
+      high1 = c_faces[0];
       break;
   }
   // return { rank: rank, value: c_faces[hand_max_cards - 1] };
-  return { rank: rank, value: highCard };
+  return { rank: rank, high1: high1, high2: high2 };
 
   function byCountFirst(a, b) {
     //Counts are in reverse order - bigger is better
@@ -542,28 +572,38 @@ function rankHand(cardArray, id) {
 function resultString() {
   let myFinal = rankHand(hand, "my");
   let opFinal = rankHand(op_hand, "op");
-  console.log("myFinal rank " + myFinal.rank + "(" + myFinal.value + ") and " +
-              "opFinal rank " + opFinal.rank + "(" + opFinal.value + ")");
+  console.log("myFinal rank " + myFinal.rank + "(" + myFinal.high1 + ") and " +
+              "opFinal rank " + opFinal.rank + "(" + opFinal.high1 + ")");
 
-  let myWin = (myFinal.rank > opFinal.rank) || ((myFinal.rank === opFinal.rank) && (myFinal.value > opFinal.value));
-  let draw = (myFinal.rank === opFinal.rank) && (myFinal.value === opFinal.value);
+  
+  let myWin;
+  let draw;
+  // two pair requires special handling
+  if (myFinal.rank === ranks.TwoPair && opFinal.rank === ranks.TwoPair) {
+    myWin = (myFinal.high1 > opFinal.high1) ||
+      (myFinal.high1 === opFinal.high1) && (myFinal.high2 > opFinal.high2)
+    draw = (myFinal.high1 === opFinal.high1) && (myFinal.high2 === opFinal.high2)
+  } else {
+    myWin = (myFinal.rank > opFinal.rank) || ((myFinal.rank === opFinal.rank) && (myFinal.high1 > opFinal.high1));
+    draw = (myFinal.rank === opFinal.rank) && (myFinal.high1 === opFinal.high1);
+  }
   
   if (myWin) {
     return (
       "You win! " +
-      rankName(myFinal.rank, myFinal.value) +
+      rankName(myFinal.rank, myFinal.high1, myFinal.high2) +
       " beats " +
-      rankName(opFinal.rank, opFinal.value) +
+      rankName(opFinal.rank, opFinal.high1, opFinal.high2) +
       "."
     );
   } else if (draw) {
-    return "Draw... " + rankName(myFinal.rank, myFinal.value) + ".";
+    return "Draw... " + rankName(myFinal.rank, myFinal.high1, myFinal.high2) + ".";
   } else {
     return (
       "You lose. " +
-      rankName(opFinal.rank, opFinal.value) +
+      rankName(opFinal.rank, opFinal.high1, opFinal.high2) +
       " beats " +
-      rankName(myFinal.rank, myFinal.value) +
+      rankName(myFinal.rank, myFinal.high1, myFinal.high2) +
       "."
     );
   }
@@ -662,6 +702,8 @@ function replotCardGrid(whichGrid, id, x_cols, y_rows) {
   }
 }
 
+
+// basic - just compares at rank level (not high card)
 function bestHand(inHand, cardToTry, direction) {
   console.log("bestHand add card " + cardToTry + "?");
   // if no card to try or hand has fewer than max cards don't rank
@@ -777,9 +819,7 @@ function opMove() {
 
   // if trying to pick up opponent (my) card then check for victory
   if (currentCard === handCard(0)) {
-    setPlayMode("1");
-    alert(resultString());
-    location.reload();
+    gameOver();
   }
 
   console.log("op card resolve: currentCard = " + currentCard + ", replaceCardSlot = " + replaceCardSlot);
@@ -823,7 +863,14 @@ function handleKey(e) {
       let handCardSlot = curKey - keys.k1;
       if (tray > -1) {
         let currentHandCard = handCard(handCardSlot);
-        console.log("handCardSlot = " + handCardSlot + ", tray = " + cardName(tray) + ", currentHandCard = " + cardName(currentHandCard));
+        console.log(
+          "handCardSlot = " +
+            handCardSlot +
+            ", tray = " +
+            cardName(tray) +
+            ", currentHandCard = " +
+            cardName(currentHandCard)
+        );
         if (currentHandCard > -1) {
           setPile(currentHandCard);
         }
@@ -869,9 +916,10 @@ function handleKey(e) {
       moveKey = true;
       prevKey = -1;
       break;
-    case keys.esc:
+    case keys.kx:
+    case keys.kq:
       if (confirm("Exit game?") === true) {
-        window.location.href = "index.html";
+        exitGame();
       }
   }
 
@@ -882,16 +930,12 @@ function handleKey(e) {
     let trayCount = tray > -1 ? 1:0;
     if (pileCount + trayCount > 41) {
         boardSetCard(myCard.x, myCard.y, handCard(0));
-        setPlayMode("1");
-        alert(resultString());
-        location.reload();
+        gameOver();
     }
     if (currentCard > -1) {
       if (currentCard === opHandCard(0)) {
         boardSetCard(myCard.x, myCard.y, handCard(0));
-        setPlayMode("1");
-        alert(resultString());
-        location.reload();
+        gameOver();
       } else {
         let handCardSlot = handOpenCard();
         console.log("handCardSlot = " + handCardSlot);
@@ -906,11 +950,11 @@ function handleKey(e) {
     boardShadeCell("board", myCard.x, myCard.y, myBackground);
     setHandRank();
     opMove();
+    playCardSound();    
   } else {
     boardSetCard(myCard.x, myCard.y, handCard(0));
     setHandRank();
   }
-  playCardSound();
 }
 
 playMode = GetURLParameter("play_mode");
@@ -942,6 +986,8 @@ boardSetCard(myCard.x, myCard.y, handCard(0));
 boardShadeCell("board", myCard.x, myCard.y, myBackground);
 boardSetCard(opCard.x, opCard.y, opHandCard(0));
 boardShadeCell("board", opCard.x, opCard.y, opBackground);
+setHandRank();
+setOpHandRank();
 
 //setPlayMode(playMode);
 
