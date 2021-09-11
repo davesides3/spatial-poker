@@ -1,3 +1,7 @@
+// Spatial Poker
+// MIT License - Copyright 2021 David Sides
+// https://github.com/davesides3/spatial-poker
+
 // ZzFX - Zuper Zmall Zound Zynth - Micro Edition
 // MIT License - Copyright 2019 Frank Force
 // https://github.com/KilledByAPixel/ZzFX
@@ -18,6 +22,7 @@ r+t+c|0;a<h;k[a++]=f)++J%(100*F|0)||(f=q?1<q?2<q?3<q?M.sin((g%d)**3):M.max(M.min
 getChannelData(0).set(k);b=zzfxX.createBufferSource();b.buffer=p;b.connect(zzfxX.destination
 );b.start();return b};zzfxX=new (window.AudioContext||webkitAudioContext) // audio context
 
+// end of Frank Force ZzFX code (amazing!)
 
 // https://stackoverflow.com/a/22607328
 function GetURLParameter(sParam)
@@ -71,6 +76,17 @@ const ranks = {
   NoRank: 0
 };
       
+const playModes = {
+  Day: "1",
+  Twilight: "2",
+  Night: "3"
+};
+
+const soundModes = {
+  Off: "0",
+  On: "1"
+}
+
 const card_suit_name = ["spades", "hearts", "diamonds", "clubs"];
 
 const c_ace_spades = 0;
@@ -91,8 +107,8 @@ const handGrid = document.getElementById("hand");
 const opHandGrid = document.getElementById("op_hand");
 const boardGrid = document.getElementById("board");
 
-var playMode = "3";
-var soundMode = "1";
+var playMode = playModes.Night;
+var soundMode = soundModes.On;
 
 var cards = [];
 var board = [];
@@ -130,10 +146,33 @@ const keys = {
   kq: 81
 };
 
-function playCardSound() {
-  if (soundMode === "1") {
-    console.log("play sound");
-    zzfx(...[,,,,,.01,,2,,,,,,2]);
+function playCardSlide() {
+  if (soundMode === soundModes.On) {
+    zzfx(...[,.1,80,.01,.05,.01,,,,,,,,2]);
+  }
+}
+
+async function playCardDeal() {
+  if (soundMode === soundModes.On) {
+    zzfx(...[,.1,80,.01,.5,.01,,,,,,,,2,15]);
+    // https://stackoverflow.com/a/39914235
+    await new Promise(r => setTimeout(r, 1000));
+  }
+}
+
+async function playWinSound() {
+  if (soundMode === soundModes.On) {
+    zzfx(...[,0,1152,.05,.12,.03,1,.42,,,293,.04,,,,,,,.02,.13]);
+  }
+}
+
+function playDrawSound() {
+  zzfx(...[,,10,.09,.04,.21,1,.45,,-68,-263,.47,,,51,,,,.05]);
+}
+
+async function playLoseSound() {
+  if (soundMode === soundModes.On) {
+    zzfx(...[,0,916,,.05,0,2,.01,-79,-50,,,.02,,,,,.42,.05]);
   }
 }
 
@@ -151,10 +190,11 @@ function createCard(num) {
   let trayCard = tray;
   let pileCard = pile[pile.length - 1];
   let plotColor = "black";
-  if (cardInMyHand || num === opFace || num === pileCard || num === trayCard || playMode === "1") {
+  if (cardInMyHand || num === opFace || num === pileCard ||
+      num === trayCard || playMode == playModes.Day) {
     plotCard = uni_cards[num];
   }
-  if (playMode === "2" || playMode === "1") {
+  if (playMode == playModes.Day || playMode == playModes.Twilight) {
     plotColor = cardColor(num);
   }
   
@@ -258,7 +298,6 @@ function boardShadeCell(id, x, y, color) {
       opHandItem.style.background = color;
       break;
     default:
-      console.log("bad id in boardShadeCell");
       break;
   }
 }
@@ -278,7 +317,6 @@ function boardSetCard(x, y, num) {
 }
 
 function opHandSetCard(c, num) {
-  console.log("c in opHandSetCard = " + c);
   opHandItem = document.querySelector(".card-grid-item-op_hand-" + c + "-0");
   let curCard = opHandCard(c);
   op_hand[c] = num;
@@ -356,10 +394,14 @@ function exitGame() {
   window.location.href = "index.html";
 }
 
-function gameOver() {
+async function gameOver() {
   // show all cards
   setPlayMode("1");
-  if (confirm(resultString()) === true) {
+  let resultText = resultString();
+  // https://stackoverflow.com/a/39914235
+  await new Promise(r => setTimeout(r, 750));
+  // resultText has to be generated before confirm() so sound will play
+  if (confirm(resultText) === true) {
     // start a new game
     location.reload();
     
@@ -381,7 +423,7 @@ function setHandRank() {
 function setOpHandRank() {
   let { rank, high1, high2 } = rankHand(op_hand, "op");
   let textToDisplay;
-  if (playMode === "1") {
+  if (playMode == playModes.Day) {
     textToDisplay = "Opponent's hand: " + rankName(rank, high1, high2);  
   } else {
     textToDisplay = "Opponent's Hand";
@@ -406,7 +448,7 @@ function setPlayMode(playModeIn) {
 
 function rankName(rankNum, highCard1, highCard2) {
   switch (rankNum) {
-    case ranks.StraighFlush:
+    case ranks.StraightFlush:
       return "Straight Flush (" + cardName(highCard1) + " high)";
     case ranks.FourOfAKind:
       return "Four of a Kind (" + cardName(highCard1) + "s)";
@@ -563,6 +605,7 @@ function resultString() {
   }
   
   if (myWin) {
+    playWinSound();
     return (
       "You win! " +
       rankName(myFinal.rank, myFinal.high1, myFinal.high2) +
@@ -571,8 +614,10 @@ function resultString() {
       "."
     );
   } else if (draw) {
-    return "Draw... " + rankName(myFinal.rank, myFinal.high1, myFinal.high2) + ".";
+    playDrawSound();
+    return ("Draw... " + rankName(myFinal.rank, myFinal.high1, myFinal.high2) + ".")
   } else {
+    playLoseSound();
     return (
       "You lose. " +
       rankName(opFinal.rank, opFinal.high1, opFinal.high2) +
@@ -891,7 +936,7 @@ function handleKey(e) {
     boardShadeCell("board", myCard.x, myCard.y, myBackground);
     setHandRank();
     opMove();
-    playCardSound();    
+    playCardSlide();    
   } else {
     boardSetCard(myCard.x, myCard.y, handCard(0));
     setHandRank();
@@ -900,6 +945,8 @@ function handleKey(e) {
 
 playMode = GetURLParameter("play_mode");
 soundMode = GetURLParameter("sound_mode");
+
+playCardDeal();
 
 pileCountItem = document.getElementById("pile_count");
 handRankItem = document.getElementById("hand_rank");
@@ -923,5 +970,6 @@ boardSetCard(opCard.x, opCard.y, opHandCard(0));
 boardShadeCell("board", opCard.x, opCard.y, opBackground);
 setHandRank();
 setOpHandRank();
+
 
 window.addEventListener("keydown", handleKey);
