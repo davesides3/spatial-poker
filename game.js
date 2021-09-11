@@ -421,9 +421,9 @@ function rankName(rankNum, highCard1, highCard2) {
     case ranks.FourOfAKind:
       return "Four of a Kind (" + cardName(highCard1) + "s)";
     case ranks.FullHouse:
-      return "Full House (" + cardName(highCard1) + "s)";
+      return "Full House (" + cardName(highCard1) + "s over " + cardName(highCard2) + "s)";
     case ranks.Flush:
-      return "Flush (" + cardName(highCard1) + "s)";
+      return "Flush (" + cardName(highCard1) + " high)";
     case ranks.Straight:
       return "Straight (" + cardName(highCard1) + " high)";
     case ranks.ThreeOfAKind:
@@ -515,7 +515,11 @@ function rankHand(cardArray, id) {
       // be high, but the 3rd card will be in the 3-of-a-kind
       high1 = c_faces[2];
       // high2 is not really needed, but nice to show
-      high2 = c_faces[4];
+      if (c_faces[1] != c_faces[2]) {
+        high2 = c_faces[1];
+      } else {
+        high2 = c_faces[4];
+      }
       break;
     case ranks.Flush:
       high1 = c_faces[0];
