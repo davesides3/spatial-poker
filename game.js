@@ -63,17 +63,6 @@ const card_suits = [
   3,3,3,3,3,3,3,3,3,3,3,3,3
 ];
 
-// const colors = [
-//   "black",
-//   "red",
-//   "black",
-//   "red",
-//   "black",
-//   "green",
-//   "black",
-//   "black",
-//   "black"
-// ];
 const card_suit_name = ["spades", "hearts", "diamonds", "clubs"];
 
 const c_ace_spades = 0;
@@ -178,31 +167,27 @@ function cardColor(num) {
 
 function cardName(num) {
   let t = "";
-  let n = num % 13;
+  let n = card_faces[num - 1];
 
-  if (n === 0) {
-    t = "ace of ";
-  } else if (n < 10) {
-    t = n + 1 + " of ";
+  if (n === 14) {
+    t = "Ace";
+  } else if (n < 11) {
+    t = n.toString();
   } else {
     switch (n) {
-      case 10:
-        t = "Jack of ";
-        break;
       case 11:
-        t = "Queen of ";
+        t = "Jack";
         break;
       case 12:
-        t = "King of ";
+        t = "Queen";
+        break;
+      case 13:
+        t = "King";
         break;
       default:
-        t = "Unknown of ";
+        t = "???";
     }
   }
-
-  let suit = parseInt(num / 13);
-  t = t + card_suit_name[suit];
-  console.log("num = " + num + ", n = " + n + ", t = " + t);
   return t;
 }
 
@@ -400,27 +385,27 @@ function rankName(rankNum, highCard) {
   console.log("rankNum = ", rankNum);
   switch (rankNum) {
     case 9:
-      return "Straight Flush";
+      return "Straight Flush (" + cardName(highCard) + " high)";
     case 8:
-      return "Four of a Kind";
+      return "Four of a Kind (" + cardName(highCard) + "s)";
     case 7:
-      return "Full House";
+      return "Full House (" + cardName(highCard) + "s)";
     case 6:
-      return "Flush";
+      return "Flush (" + cardName(highCard) + "s)";
     case 5:
-      return "Straight";
+      return "Straight (" + cardName(highCard) + " high)";
     case 4:
-      return "Three of a Kind";
+      return "Three of a Kind (" + cardName(highCard) + "s)";
     case 3:
-      return "Two Pair";
+      return "Two Pair (" + cardName(highCard) + "s)";
     case 2:
-      return "A Pair";
+      return "A Pair (" + cardName(highCard) + "s)";
     case 1:
-      return "High Card (" + highCard + ")";
+      return "High Card (" + cardName(highCard) + ")";
     case 0:
       return "No Rank";
     default:
-      return "unexpected " + rankNum;
+      return "unexpected (" + rankNum + ")";
   }
 }
 
@@ -439,6 +424,11 @@ function rankHand(cardArray, id) {
     }
   }
 
+  // no rank until 5 cards
+  if (c_faces.includes(-1)) {
+    return { rank: 0, value: 0 };
+  }
+  
   console.log(id + " cardArray = " + cardArray);
   console.log(id + " c_faces before sort = " + c_faces);
 
@@ -481,7 +471,60 @@ function rankHand(cardArray, id) {
     (duplicates[2] && 2) ||
     1;
 
-  return { rank: rank, value: c_faces[hand_max_cards - 1] };
+  // highCard determination won't necessarily determine
+  // the highest hand because it only consider the strongest match
+  // (e.g. 3 of a kinds in a full house)
+  let highCard;
+  switch (rank) {
+    case 9:
+      highCard = c_faces[0];
+      break;
+    case 8:
+      // four of a kind, the first one might the the odd one,
+      // but the second card has to be in the 4 of a kind
+      highCard = c_faces[1];
+      break;
+    case 7:
+      // similarly, a full house could have the first 2 cards
+      // be high, but the 3rd card will be in the 3-of-a-kind
+      highCard = c_faces[2];
+      break;
+    case 6:
+      highCard = c_faces[0];
+      break;
+    case 5:
+      highCard = c_faces[0];
+      break;
+    case 4:
+      // three of a kind will have the middle card as part of the 3
+      highCard = c_faces[2];
+      break;
+    case 3:
+      // two pair might have a high card unmatched, but the second
+      // card will be the high pair
+      highCard = c_faces[1];
+      break;
+    case 2:
+      let prevCard = -1;
+      highCard = -1;
+      for (let i = 0; i < hand_max_cards; i++) {
+        if (c_faces[i] === prevCard) {
+          highCard = c_faces[i];
+          break;
+        }
+        prevCard = c_faces[i];
+      }
+      console.log("pair ranking high card = " + highCard);
+      break;
+    case 1:
+      highCard = c_faces[0];
+      break;
+    case 0:
+      highCard = c_faces[0];
+      break;
+  }
+  // return { rank: rank, value: c_faces[hand_max_cards - 1] };
+  return { rank: rank, value: highCard };
 
   function byCountFirst(a, b) {
     //Counts are in reverse order - bigger is better
@@ -496,14 +539,16 @@ function rankHand(cardArray, id) {
   }
 }
 
-
 function resultString() {
   let myFinal = rankHand(hand, "my");
   let opFinal = rankHand(op_hand, "op");
   console.log("myFinal rank " + myFinal.rank + "(" + myFinal.value + ") and " +
               "opFinal rank " + opFinal.rank + "(" + opFinal.value + ")");
+
+  let myWin = (myFinal.rank > opFinal.rank) || ((myFinal.rank === opFinal.rank) && (myFinal.value > opFinal.value));
+  let draw = (myFinal.rank === opFinal.rank) && (myFinal.value === opFinal.value);
   
-  if (myFinal.rank > opFinal.rank) {
+  if (myWin) {
     return (
       "You win! " +
       rankName(myFinal.rank, myFinal.value) +
@@ -511,7 +556,9 @@ function resultString() {
       rankName(opFinal.rank, opFinal.value) +
       "."
     );
-  } else if (opFinal.rank > myFinal.rank) {
+  } else if (draw) {
+    return "Draw... " + rankName(myFinal.rank, myFinal.value) + ".";
+  } else {
     return (
       "You lose. " +
       rankName(opFinal.rank, opFinal.value) +
@@ -519,8 +566,6 @@ function resultString() {
       rankName(myFinal.rank, myFinal.value) +
       "."
     );
-  } else {
-    return ("Draw... " + rankName(myFinal.rank, myFinal.value) + ".");
   }
 }
 
@@ -732,7 +777,7 @@ function opMove() {
 
   // if trying to pick up opponent (my) card then check for victory
   if (currentCard === handCard(0)) {
-    setPlayMode(1);
+    setPlayMode("1");
     alert(resultString());
     location.reload();
   }
@@ -747,7 +792,7 @@ function opMove() {
       opHandSetCard(replaceCardSlot, currentCard);
     } else if (replaceCardSlot > -1) {
       opHandSetCard(replaceCardSlot, currentCard);
-      setPile(currentCard);
+      // setPile(currentCard);
     } else {
       setPile(currentCard);
     }
@@ -834,9 +879,17 @@ function handleKey(e) {
     boardSetCard(curX, curY, -1);
     boardShadeCell("board", curX, curY, boardBackground);
     let currentCard = boardCard(myCard.x, myCard.y);
+    let trayCount = tray > -1 ? 1:0;
+    if (pileCount + trayCount > 41) {
+        boardSetCard(myCard.x, myCard.y, handCard(0));
+        setPlayMode("1");
+        alert(resultString());
+        location.reload();
+    }
     if (currentCard > -1) {
       if (currentCard === opHandCard(0)) {
-        setPlayMode(1);
+        boardSetCard(myCard.x, myCard.y, handCard(0));
+        setPlayMode("1");
         alert(resultString());
         location.reload();
       } else {
