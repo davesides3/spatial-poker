@@ -11,7 +11,7 @@ body {
   display: grid;
   grid-gap: 0px;
   grid-template-rows: 30px;
-  grid-template-columns: 490px 300px;
+  grid-template-columns: 495px 300px;
 }
 
 .top_line_item {
