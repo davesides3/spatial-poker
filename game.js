@@ -2,10 +2,6 @@
 // MIT License - Copyright 2019 Frank Force
 // https://github.com/KilledByAPixel/ZzFX
 
-// This is a tiny build of zzfx with only a zzfx function to play sounds.
-// You can use zzfxV to set volume.
-// Feel free to minify it further for your own needs!
-
 'use strict';let zzfx,zzfxV,zzfxX
 
 // ZzFXMicro - Zuper Zmall Zound Zynth - v1.1.8 ~ 884 bytes minified
@@ -37,7 +33,6 @@ function GetURLParameter(sParam)
         }
     }
 }
-
 
 const uni_back = "🂠";
 const uni_cards = [
@@ -344,10 +339,6 @@ function setTray(num) {
   }
 }
 
-function clearTray() {
-  tray = -1;
-}
-
 function setPile(num) {
   // let pileItem = document.getElementById("pile");
   // let pileCountItem = document.getElementById("pile_count");
@@ -414,7 +405,6 @@ function setPlayMode(playModeIn) {
 }
 
 function rankName(rankNum, highCard1, highCard2) {
-  console.log("rankNum = ", rankNum);
   switch (rankNum) {
     case ranks.StraighFlush:
       return "Straight Flush (" + cardName(highCard1) + " high)";
@@ -461,9 +451,6 @@ function rankHand(cardArray, id) {
     return { rank: ranks.NoRank, high1: 0, high2: 0 };
   }
   
-  console.log(id + " cardArray = " + cardArray);
-  console.log(id + " c_faces before sort = " + c_faces);
-
   c_faces = c_faces.sort(function(a, b) {
     return b - a;
   });
@@ -471,22 +458,11 @@ function rankHand(cardArray, id) {
     return b - a;
   });
 
-  console.log(id + " c_faces = " + c_faces);
-  console.log(id + " c_suits = " + c_suits);
-
   const counts = c_faces.reduce(count, {});
   const duplicates = Object.values(counts).reduce(count, {});
   const flush = c_suits[0] === c_suits[hand_max_cards - 1];
   const first = c_faces[0];
   const straight = c_faces.every((f, index) => first - f === index);
-
-  console.log(id + " c_faces = " + c_faces);
-  console.log(id + " c_suits = " + c_suits);
-  console.log(id + " counts = " + JSON.stringify(counts));
-  console.log(id + " duplicates = " + JSON.stringify(duplicates));
-  console.log(id + " flush = " + flush);
-  console.log(id + " first = " + first);
-  console.log(id + " straight = " + straight);
 
   let rank =
     (flush && straight && ranks.StraightFlush) ||
@@ -548,7 +524,6 @@ function rankHand(cardArray, id) {
         }
         prevCard = c_faces[i];
       }
-      console.log("pair ranking high card = " + high1);
       break;
     case ranks.HighCard:
       high1 = c_faces[0];
@@ -557,7 +532,6 @@ function rankHand(cardArray, id) {
       high1 = c_faces[0];
       break;
   }
-  // return { rank: rank, value: c_faces[hand_max_cards - 1] };
   return { rank: rank, high1: high1, high2: high2 };
 
   function byCountFirst(a, b) {
@@ -576,10 +550,6 @@ function rankHand(cardArray, id) {
 function resultString() {
   let myFinal = rankHand(hand, "my");
   let opFinal = rankHand(op_hand, "op");
-  console.log("myFinal rank " + myFinal.rank + "(" + myFinal.high1 + ") and " +
-              "opFinal rank " + opFinal.rank + "(" + opFinal.high1 + ")");
-
-  
   let myWin;
   let draw;
   // two pair requires special handling
@@ -623,8 +593,6 @@ function makeCardGrid(whichGrid, id, x_cols, y_rows) {
   let totalCells = y_rows * x_cols - 2;
   let cellsDone = 0;
 
-  console.log("cardsToPlace = " + cardsToPlace);
-
   let num = -1;
   for (let y = 0; y < y_rows; y++) {
     for (let x = 0; x < x_cols; x++) {
@@ -634,14 +602,12 @@ function makeCardGrid(whichGrid, id, x_cols, y_rows) {
         case "board":
           // upper left and lower right are not populated
           // because that's where player and opponent start
-          // if (((x > 0) || (y > 0)) && ((x < board_max_x - 1) || (y < board_max_y - 1))) {
           if (
             (x === 0 && y === 0) ||
             (x === board_max_x - 1 && y === board_max_y - 1)
           ) {
             num = -1;
           } else {
-            //            if (x > 0 || y > 0 || (x < board_max_x - 1) || (y < board_max_y - 1)) {
             // this makes sure all cards are on the board,
             // but throws in a blank periodically
             if (
@@ -657,25 +623,21 @@ function makeCardGrid(whichGrid, id, x_cols, y_rows) {
             } else {
               num = -1;
             }
-            console.log("num to place on board = " + num);
           }
           whichGrid.appendChild(cell).className =
             "card-grid-item card-grid-item-board-" + x + "-" + y;
-          console.log(num + " at (" + x + "," + y + ")");
           boardSetCard(x, y, num);
           boardShadeCell(id, x, y, boardBackground);
           break;
         case "hand":
           whichGrid.appendChild(cell).className =
             "card-grid-item card-grid-item-hand-" + x + "-" + y;
-          console.log("hand grid num = " + num);
           handSetCard(x, num);
           boardShadeCell(id, x, 0, myBackground);
           break;
         case "op_hand":
           whichGrid.appendChild(cell).className =
             "card-grid-item card-grid-item-op_hand-" + x + "-" + y;
-          console.log("ophand grid num = " + num);
           opHandSetCard(x, num);
           boardShadeCell(id, x, 0, opBackground);
           break;
@@ -709,7 +671,6 @@ function replotCardGrid(whichGrid, id, x_cols, y_rows) {
 
 // basic - just compares at rank level (not high card)
 function bestHand(inHand, cardToTry, direction) {
-  console.log("bestHand add card " + cardToTry + "?");
   // if no card to try or hand has fewer than max cards don't rank
   if (cardToTry === -1 || inHand.includes(-1)) {
     return {rank: -1, slot: -1, dir: direction};
@@ -750,19 +711,12 @@ function opMove() {
   let handDown = bestHand(op_hand, cardDown, "down");
   let handResults = [handLeft, handRight, handUp, handDown];
   let bestMove = handResults.sort(function(a, b) {return b.rank - a.rank;});
-  
-  console.log("replaceCardSlot = " + replaceCardSlot);
-  console.log("bestMove = " + JSON.stringify(bestMove));
-  
-  // console.log("cardUp = " + cardUp + " cardDown = " + cardDown + " cardLeft = " + cardLeft + " cardRight = " + cardRight);
-
   let moveRandom = true;
   let moveDirection;
   
   // if no adjacent card then move random direction
   
   if (bestMove[0].rank > 0) {
-    console.log("there is a best move");
     moveRandom = false;
     replaceCardSlot = bestMove[0].slot;
     moveDirection = bestMove[0].dir;
@@ -784,7 +738,6 @@ function opMove() {
   
   if (moveRandom) {
     // move randomly, but favor moving to card if one is adjacent
-
     let noAdjCards = (cardLeft + cardRight + cardUp + cardDown === -4);
     let opMoved = false;
     while (opMoved === false) {
@@ -819,24 +772,18 @@ function opMove() {
   }
 
   currentCard = boardCard(opCard.x, opCard.y);
-  console.log("B myCard = (" + opCard.x + "," + opCard.y + ")" + ", card = " + currentCard + " " + cardName(currentCard));
 
   // if trying to pick up opponent (my) card then check for victory
   if (currentCard === handCard(0)) {
     gameOver();
   }
 
-  console.log("op card resolve: currentCard = " + currentCard + ", replaceCardSlot = " + replaceCardSlot);
-
   if (currentCard > -1) {
     if (opHandCard(replaceCardSlot) > -1) {
-      // if (Math.floor(Math.random() * 9) < 5) {
-      //   console.log("DISCARD " + cardName(opHandCard(replaceCardSlot)) + " KEEP " + cardName(currentCard));
       setPile(opHandCard(replaceCardSlot));
       opHandSetCard(replaceCardSlot, currentCard);
     } else if (replaceCardSlot > -1) {
       opHandSetCard(replaceCardSlot, currentCard);
-      // setPile(currentCard);
     } else {
       setPile(currentCard);
     }
@@ -867,14 +814,6 @@ function handleKey(e) {
       let handCardSlot = curKey - keys.k1;
       if (tray > -1) {
         let currentHandCard = handCard(handCardSlot);
-        console.log(
-          "handCardSlot = " +
-            handCardSlot +
-            ", tray = " +
-            cardName(tray) +
-            ", currentHandCard = " +
-            cardName(currentHandCard)
-        );
         if (currentHandCard > -1) {
           setPile(currentHandCard);
         }
@@ -884,7 +823,6 @@ function handleKey(e) {
         let prevCardSlot = prevKey - keys.k1;
         let curCard = handCard(handCardSlot);
         let prevCard = handCard(prevCardSlot);
-        console.log("swap " + prevCardSlot + " with " + handCardSlot);
         handSetCard(handCardSlot, prevCard);
         handSetCard(prevCardSlot, curCard);
         prevKey = -1;
@@ -942,7 +880,6 @@ function handleKey(e) {
         gameOver();
       } else {
         let handCardSlot = handOpenCard();
-        console.log("handCardSlot = " + handCardSlot);
         if (handCardSlot === -1) {
           setTray(currentCard);
         } else {
@@ -976,12 +913,6 @@ shuffleDeck();
 handSetCard(0, cards.pop());
 opHandSetCard(0, cards.pop());
 
-// for (let i = 0; i < hand_max_cards; i++) {
-//   boardShadeCell("hand", i, 0, myBackground);
-// }
-// for (let i = 0; i < hand_max_cards; i++) {
-//   boardShadeCell("op_hand", i, 0, opBackground);
-// }
 boardShadeCell("hand", hand_max_cards, 0, trayBackground);
 boardShadeCell("hand", hand_max_cards + 1, 0, pileBackground);
 boardInit();
@@ -992,46 +923,5 @@ boardSetCard(opCard.x, opCard.y, opHandCard(0));
 boardShadeCell("board", opCard.x, opCard.y, opBackground);
 setHandRank();
 setOpHandRank();
-
-//setPlayMode(playMode);
-
-console.log(
-  "opHandCard(0) = " +
-    opHandCard(0) +
-    ", boardCard(" +
-    opCard.x +
-    "," +
-    opCard.y +
-    ") = " +
-    boardCard(opCard.x, opCard.y)
-);
-
-
-// let firstGridItem = document.querySelector(".card-grid-item-board-" + 0 + "-" + 0);
-// firstGridItem.appendChild(handCard(0));
-
-console.log(
-  "myCard = (" +
-    myCard.x +
-    "," +
-    myCard.y +
-    ")" +
-    ", card = " +
-    boardCard(myCard.x, myCard.y) +
-    " " +
-    cardName(boardCard(myCard.x, myCard.y))
-);
-
-console.log(
-  "opCard = (" +
-    opCard.x +
-    "," +
-    opCard.y +
-    ")" +
-    ", card = " +
-    boardCard(opCard.x, opCard.y) +
-    " " +
-    cardName(boardCard(opCard.x, opCard.y))
-);
 
 window.addEventListener("keydown", handleKey);
