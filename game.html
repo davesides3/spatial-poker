@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <!--
 To Do
-- once 52 cards claimed or discarded, end game with victory check
-- qa: check pile count
+- polish top line display
 - qa: check navigation between pages on disk, not just server
-- bug: pair, two pair, 3 of a kind, 4 of a kind, full house comparisons
-- bug: high card comparison on ties
+- clean up all console.logs
 - sound: adjust sound of moving card
 - sound: sound for win
 - sound: sound for loss
 - sound: sound for draw
 - toggle sound on/off
-- fit screen better (iPad?)
-
-Bugs
-
 
 Would Be Nice
 - ace on bottom straight
@@ -41,7 +35,12 @@ Mobile
   </head>
   <body>
     <main class="map">
-      <div id="hand" class="card-container grid"></div><div id="op_hand" class="card-container grid"></div>
+      <div class="top_line">
+        <div class="top_line_item" id="hand_rank"></div>
+        <div class="top_line_item" id="op_hand_rank"></div>
+      </div>
+      <div id="hand" class="card-container grid"></div>
+      <div id="op_hand" class="card-container grid"></div>
       <div id="handnums" class="hand-number grid"></div>
       <div class="hand_numbers">
         <div class="hand_number_box">(1)</div>
@@ -59,7 +58,7 @@ Mobile
         >
           Pile = 0
         </div>
-        <div
+        <!--         <div
           class="hand_number_box_small"
           id="hand_rank"
           style="text-align:center"
@@ -68,7 +67,7 @@ Mobile
           class="hand_number_box_small"
           id="op_hand_rank"
           style="text-align:center"
-        ></div>
+        ></div> -->
       </div>
       <div id="board" class="card-container grid"></div>
     </main>

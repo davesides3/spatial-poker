@@ -1,10 +1,26 @@
 body {
-  background-color: ivory;
+  background-color: Khaki;
 }
 
 :root {
   --grid-cols: 0;
   --grid-rows: 0;
+}
+
+.top_line {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-rows: 30px;
+  grid-template-columns: 490px 300px;
+}
+
+.top_line_item {
+  padding: 1em;
+  border: 1px color: black;
+  text-align: left;
+  font-size: 14px;
+  margin: 2px;
+  padding: 0;
 }
 
 .hand_numbers {

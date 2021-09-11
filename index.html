@@ -7,28 +7,52 @@
     <title>Spatial Poker</title>
     <style>
       html {
-        /* https://stackoverflow.com/a/16841457 */
         height: 100%;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
-        background: lightgreen;
-        background-repeat: no-repeat;
-        background: -webkit-linear-gradient(to left top, goldenrod, lightgreen);
-        background: -moz-linear-gradient(to left top, goldenrod, lightgreen);
-        background: -ms-linear-gradient(to left top, goldenrod, lightgreen);
-        background: -o-linear-gradient(to left top, goldenrod, lightgreen);
-        background: linear-gradient(to left top, goldenrod, lightgreen);
+        background: lightcyan;
+        font-family: "Verdana", sans-serif;
+      }
+      .card-container {
+        display: inline-grid;
+        grid-gap: 0px;
+        grid-template-rows: repeat(1, 110px);
+        grid-template-columns: repeat(5, 100px);
+      }
+
+      .card-grid-item {
+        padding: 1em;
+        border: 1px solid green;
+        text-align: center;
+        font-size: 80px;
+        color: black;
+        background: goldenrod;
+        margin: 0;
+        padding: 0;
+      }
+      .start_button {
+        background-color: darkgreen;
+        border: 2px solid black;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 20px;
       }
     </style>
   </head>
   <body>
-    <h1 class="text-center text-white">Spatial Poker</h1>
+    <h1>Spatial Poker</h1>
+    <div id="title_hand" class="card-container grid">
+      <div class="card-grid-item">🂡</div>
+      <div class="card-grid-item">🂮</div>
+      <div class="card-grid-item">🂭</div>
+      <div class="card-grid-item">🂫</div>
+      <div class="card-grid-item">🂪</div>
+    </div>
     <p>
       Use the <b>arrow keys</b> to move around the spaces on the board to
       collect cards. When you meet your computer opponent the best 5-card poker
-      hand wins!
+      hand wins!*
     </p>
     <p>
       Use the number keys <b>1</b> to <b>5</b> to replace the card in your hand
@@ -41,27 +65,27 @@
       to swap cards 1 and 2 in your hand.<br /><br />
       Press <b>Esc</b> to exit the game and return to this page.<br /><br />
       Use browser magnification (e.g. Ctrl-+) to adjust sizing to taste based on
-      screen size. Use browser refresh to shuffle and restart the game.
+      screen size. Use browser refresh to shuffle and restart the game.<br /><br />
+      <b><em>Start where you are. Use what you have. Do what you can.</em></b> -
+      Arthur Ashe
     </p>
-    <form action="game.html" method="GET">
-      <p>Play mode:</p>
+    <form action="game.html">
+      <p><b>Play mode:</b></p>
       <input type="radio" name="play_mode" value="1" checked />
       <label for="1">Day (face up, easy)</label><br />
       <input type="radio" name="play_mode" value="2" />
       <label for="2">Twilight (color known)</label><br />
       <input type="radio" name="play_mode" value="3" />
       <label for="3">Night (face down)<br /><br /></label>
-      <span>Sound:</span>
+      <span><b>Sound:</b></span>
       <input type="radio" name="sound_mode" value="1" checked />
       <label for="1">On</label>
       <input type="radio" name="sound_mode" value="0" />
       <label for="2">Off</label><br /><br />
       <input type="hidden" name="debug_mode" value="1" />
-      <input type="submit" value="Start Game" />
+      <input type="submit" class="start_button" value="Start Game" />
     </form>
-    <p>
-      Art is never finished, only abandoned. - Leonardo da Vinci<br /><br />
-      Start where you are. Use what you have. Do what you can. - Arthur Ashe
-    </p>
+    <br />
+    * For comparing hands: suit is not considered, only highest pair or triplet, aces are always high.
   </body>
 </html>
