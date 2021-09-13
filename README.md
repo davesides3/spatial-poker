@@ -12,6 +12,7 @@ Inspired by ASCII text Star Trek games from long ago and the broad shoulders of 
 Key Learnings
 - power of grid
 - with only 13K, leverage the browser environment (e.g. unicode cards)
+- using a set of existing rules (poker) saved time for technology work
 - so much more to learn about CSS!
 - so much more to learn about JavaScript!
 - basic programming remains the same as decades ago, but Google, StackOverflow, etc. amazing
@@ -36,3 +37,8 @@ Mobile
 - add touch
 - add drag-and-drop to reorder hand
 - keep hand visible on screen regardless of sizing?
+
+Next Time
+- try an original game idea
+- use CSS more to present a more polished product
+- use a framework? html/css/js allowed for 10K zip this time though - nice to have room to work
