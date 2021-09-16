@@ -1,6 +1,6 @@
 # Spatial Poker
 
-Copyright (c) David Sides
+Copyright © 2021 David Sides
 MIT License
 
 Built for the [Js13kGames](https://js13kgames.com) competition.
