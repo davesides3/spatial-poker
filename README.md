@@ -16,7 +16,7 @@ Key Learnings
 - so much more to learn about CSS!
 - so much more to learn about JavaScript!
 - basic programming remains the same as decades ago, but Google, StackOverflow, etc. amazing
-- tight REPL is essential for productivity and fun! (check out https:/www.glitch.com)
+- tight REPL is essential for productivity and fun! (check out https://www.glitch.com)
 - keep it simple - polishing even a simple game takes a lot of time
 
 Would Be Nice - easier
