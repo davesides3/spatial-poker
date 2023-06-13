@@ -3,7 +3,7 @@
 Copyright © 2021 David Sides
 MIT License
 
-Built for the [Js13kGames](https://js13kgames.com) competition.
+Built for the 2021 [Js13kGames](https://js13kgames.com) competition. https://js13kgames.com/entries/spatial-poker
 
 Thank you to Frank Force for [ZzFX](https://killedbyapixel.github.io/ZzFX/), a tiny sound generator.
 
